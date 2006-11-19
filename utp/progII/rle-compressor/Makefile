@@ -1,7 +1,7 @@
 
 CFLAGS = -Wall
 
-all: rle test
+all: rle
 
 rle: rle.c
 	$(CC) $(CFLAGS) -o $@ $<

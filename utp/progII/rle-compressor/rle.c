@@ -17,9 +17,10 @@
 #include <string.h>
 
 #define BUFFER_SIZE	512
+#define WBUFFER_SIZE	(BUFFER_SIZE*2)
 
 static const char *error_messages[] = {
-	"finished",
+	"", /* finished */
 	"", /* invalid command line option, usage() already does it */
 	"input file not found",
 	"could not create output file"
@@ -44,31 +45,35 @@ int compress(FILE *fin, FILE *fout)
 	size_t count;
 	size_t i;
 	char buf[BUFFER_SIZE];
-	char wbuf[BUFFER_SIZE];
+	char wbuf[WBUFFER_SIZE];
 	unsigned char freq;
 	char last;
 	size_t wi;
 
-	while(count = fread(buf, sizeof(buf[0]), BUFFER_SIZE, fin)) {
-		last = buf[0];
-		freq = 0;
-		for (i = 1; i < count; i++) {
-			if (buf[i] != last || freq >= (unsigned char)-1 ) {
+	/* when freq = 0, last is unset */
+	freq = 0;
+	wi = 0;
+	while((count = fread(buf, sizeof(buf[0]), BUFFER_SIZE, fin))) {
+		for (i = 0; i < count; i++) {
+			if (freq > 0 && (buf[i] != last ||
+			                 freq >= (unsigned char)-1)) {
+				
 				wbuf[wi++] = freq;
 				wbuf[wi++] = last;
-				if (wi >= BUFFER_SIZE) {
-					fwrite(wbuf, sizeof(wbuf[0]), )
-				}
-				fputc(freq, fout);
-				fputc(last, fout);
 				freq = 0;
 			}
-			else
-				freq++;
+			freq++;
 			last = buf[i];
 		}
+		/* argh! we must handle when we're counting the last byte
+		 * in the file */
+		if (count != BUFFER_SIZE) {
+			wbuf[wi++] = freq;
+			wbuf[wi++] = last;
+		}
+		fwrite(wbuf, sizeof(wbuf[0]), wi, fout);
+		wi = 0; /* reset write buffer */
 	}
-	
 }
 
 int decompress(FILE *fin, FILE *fout)
@@ -94,7 +99,6 @@ int main(int argc, char *argv[])
 {
 	int errcode = 0;
 	int action;
-	char *errmsg;
 	FILE *fin;
 	FILE *fout;
 

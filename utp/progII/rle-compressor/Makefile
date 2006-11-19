@@ -1,5 +1,5 @@
 
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 
 all: rle
 

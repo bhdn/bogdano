@@ -42,30 +42,30 @@ enum errors {
 int compress(FILE *fin, FILE *fout) 
 {
 	size_t count;
-    size_t i;
+	size_t i;
 	char buf[BUFFER_SIZE];
-    char wbuf[BUFFER_SIZE];
+	char wbuf[BUFFER_SIZE];
 	unsigned char freq;
-    char last;
-    size_t wi;
+	char last;
+	size_t wi;
 
 	while(count = fread(buf, sizeof(buf[0]), BUFFER_SIZE, fin)) {
-        last = buf[0];
-        freq = 0;
-        for (i = 1; i < count; i++) {
+		last = buf[0];
+		freq = 0;
+		for (i = 1; i < count; i++) {
 			if (buf[i] != last || freq >= (unsigned char)-1 ) {
-                wbuf[wi++] = freq;
-                wbuf[wi++] = last;
-                if (wi >= BUFFER_SIZE) {
-                    fwrite(wbuf, sizeof(wbuf[0]), )
-                }
-                fputc(freq, fout);
-                fputc(last, fout);
+				wbuf[wi++] = freq;
+				wbuf[wi++] = last;
+				if (wi >= BUFFER_SIZE) {
+					fwrite(wbuf, sizeof(wbuf[0]), )
+				}
+				fputc(freq, fout);
+				fputc(last, fout);
 				freq = 0;
 			}
 			else
 				freq++;
-            last = buf[i];
+			last = buf[i];
 		}
 	}
 	
@@ -79,10 +79,9 @@ int decompress(FILE *fin, FILE *fout)
 
 void usage(char *argv[])
 {
-	printf(
-		"%s <action> <infile> <outfile>\n"
-		"action -c for compressing, -d for decompressing\n",
-		argv[0]);
+	printf("%s <action> <infile> <outfile>\n"
+	       "action -c for compressing, -d for decompressing\n",
+	       argv[0]);
 }
 
 void showerr(errcode)
@@ -121,7 +120,7 @@ int main(int argc, char *argv[])
 	fout = fopen(argv[3], "wb+");
 	if (!fout) {
 		showerr(ERR_OFAILED);
-        fclose(fin);
+		fclose(fin);
 		exit(ERR_OFAILED);
 	}
 
@@ -131,8 +130,8 @@ int main(int argc, char *argv[])
 	else
 		decompress(fin, fout);
 
-    fclose(fin);
-    fclose(fout);
+	fclose(fin);
+	fclose(fout);
 
 	showerr(errcode);
 	exit(errcode);

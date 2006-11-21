@@ -9,9 +9,9 @@ for text in tests/*.txt; do
 	out=tests-output/$textname.out
 	$rle -c $text $out
 	if cmp $out ${text}.out; then
-		status=FAILED
-	else
 		status=ok
+	else
+		status=FAILED
 	fi
 	echo "C $text $out	$status"
 	dout=tests-output/${textname}

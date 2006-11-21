@@ -22,8 +22,9 @@
 static const char *error_messages[] = {
 	"", /* finished */
 	"", /* invalid command line option, usage() already does it */
-	"input file not found",
-	"could not create output file"
+	"input file not found\n",
+	"could not create output file\n",
+	"invalid file format\n"
 };
 
 enum actions {
@@ -35,7 +36,8 @@ enum errors {
 	ERR_OK = 0,
 	ERR_INVARGS,
 	ERR_INOTFOUND,
-	ERR_OFAILED
+	ERR_OFAILED,
+	ERR_INVFFORMAT,
 
 };
 
@@ -78,7 +80,27 @@ int compress(FILE *fin, FILE *fout)
 
 int decompress(FILE *fin, FILE *fout)
 {
-	///
+	size_t readed = 0;
+	size_t written = 0;
+	size_t r;
+	char buf[BUFFER_SIZE];
+	char wbuf[WBUFFER_SIZE];
+	unsigned char cnt, k; 
+	char ch;
+
+	while ((readed = fread(buf, sizeof(buf[0]), BUFFER_SIZE, fin))) {
+		if ((readed % 2) != 0) {
+			return ERR_INVFFORMAT;
+		}
+		for (r = 0; r < readed; r += 2) {
+			cnt = buf[r];
+			ch = buf[r+1];
+			for (k = 0; k < cnt; k++) 
+				fputc(ch, fout);
+		}
+	}
+
+	return ERR_OK;
 }
 
 
@@ -130,9 +152,9 @@ int main(int argc, char *argv[])
 
 
 	if (action == ACT_COMPRESS)
-		compress(fin, fout);
+		errcode = compress(fin, fout);
 	else
-		decompress(fin, fout);
+		errcode = decompress(fin, fout);
 
 	fclose(fin);
 	fclose(fout);

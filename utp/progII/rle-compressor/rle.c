@@ -26,10 +26,10 @@
 static const char *error_messages[] = {
 	"", /* finished */
 	"", /* invalid command line option, usage() already does it */
-	"input file not found\n",
-	"could not create output file\n",
-	"invalid file format\n",
-	"writing error\n"
+	"input file not found",
+	"could not create output file",
+	"invalid file format",
+	"writing error"
 };
 
 enum actions {
@@ -123,7 +123,9 @@ void usage(char *argv[])
 
 void showerr(errcode)
 {
-	fputs(error_messages[errcode], stderr);
+	if (errcode != ERR_OK) {
+		perror(error_messages[errcode]);
+	}
 }
 
 

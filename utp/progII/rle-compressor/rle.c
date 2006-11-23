@@ -72,7 +72,8 @@ int compress(FILE *fin, FILE *fout)
 			last = buf[i];
 		}
 		/* argh! we must handle when we're counting the last byte
-		 * in the file */
+		 * in the file, it shows there's something really nasty in
+		 * the code */
 		if (count != BUFFER_SIZE) {
 			wbuf[wi++] = freq;
 			wbuf[wi++] = last;

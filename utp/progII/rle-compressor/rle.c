@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
 	if (argc != 4 || strlen(argv[1]) != 2 || argv[1][0] != '-') {
 		usage(argv);
-		exit(ERR_INVARGS);
+		return ERR_INVARGS;
 	}
 	if (argv[1][1] == 'c') 
 		action = ACT_COMPRESS;
@@ -144,20 +144,20 @@ int main(int argc, char *argv[])
 		action = ACT_DECOMPRESS;
 	else {
 		usage(argv);
-		exit(ERR_INVARGS);
+		return ERR_INVARGS;
 	}
 
 	fin = fopen(argv[2], "rb");
 	if (!fin) {
 		showerr(ERR_INOTFOUND);
-		exit(ERR_INOTFOUND);
+		return ERR_INOTFOUND;
 	}
 
 	fout = fopen(argv[3], "wb+");
 	if (!fout) {
 		showerr(ERR_OFAILED);
 		fclose(fin);
-		exit(ERR_OFAILED);
+		return ERR_OFAILED;
 	}
 
 
@@ -170,5 +170,5 @@ int main(int argc, char *argv[])
 	fclose(fout);
 
 	showerr(errcode);
-	exit(errcode);
+	return errcode;
 }

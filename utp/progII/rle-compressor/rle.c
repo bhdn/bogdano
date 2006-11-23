@@ -119,7 +119,7 @@ void usage(char *argv[])
 	       argv[0]);
 }
 
-void showerr(errcode)
+void showerr(int errcode)
 {
 	if (errcode != ERR_OK) {
 		perror(error_messages[errcode]);

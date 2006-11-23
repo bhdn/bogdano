@@ -1,7 +1,7 @@
 /* $Id$
  * $HeadURL$
  *
- * The incredible RLE compressor!
+ * The incredible (and buggy) RLE compressor!
  *
  * Bogdano Arendartchuk <debogdano@gmail.com>
  *

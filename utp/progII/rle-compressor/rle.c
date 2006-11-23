@@ -1,7 +1,10 @@
-/*
+/* $Id$
+ * $HeadURL$
+ *
  * The incredible RLE compressor!
  *
  * Bogdano Arendartchuk <debogdano@gmail.com>
+ *
  *
  * Usage:
  *
@@ -11,6 +14,7 @@
  * 
  * - action is -c to compress and -d to decompress
  * - infile is the infille and outfile is the outfile (!)
+ * 
  */
 
 #include <stdio.h>

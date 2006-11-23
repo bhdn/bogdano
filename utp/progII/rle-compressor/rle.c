@@ -88,10 +88,8 @@ int compress(FILE *fin, FILE *fout)
 int decompress(FILE *fin, FILE *fout)
 {
 	size_t readed = 0;
-	size_t written = 0;
 	size_t r;
 	char buf[BUFFER_SIZE];
-	char wbuf[WBUFFER_SIZE];
 	unsigned char cnt, k; 
 	char ch;
 

@@ -28,7 +28,8 @@ static const char *error_messages[] = {
 	"", /* invalid command line option, usage() already does it */
 	"input file not found\n",
 	"could not create output file\n",
-	"invalid file format\n"
+	"invalid file format\n",
+	"writing error\n"
 };
 
 enum actions {
@@ -42,9 +43,8 @@ enum errors {
 	ERR_INOTFOUND,
 	ERR_OFAILED,
 	ERR_INVFFORMAT,
-
+	ERR_WRITE
 };
-
 
 int compress(FILE *fin, FILE *fout) 
 {
@@ -77,9 +77,12 @@ int compress(FILE *fin, FILE *fout)
 			wbuf[wi++] = freq;
 			wbuf[wi++] = last;
 		}
-		fwrite(wbuf, sizeof(wbuf[0]), wi, fout);
+		if (fwrite(wbuf, sizeof(wbuf[0]), wi, fout) != wi)
+			return ERR_WRITE;
 		wi = 0; /* reset write buffer */
 	}
+
+	return ERR_OK;
 }
 
 int decompress(FILE *fin, FILE *fout)
@@ -99,8 +102,11 @@ int decompress(FILE *fin, FILE *fout)
 		for (r = 0; r < readed; r += 2) {
 			cnt = buf[r];
 			ch = buf[r+1];
-			for (k = 0; k < cnt; k++) 
-				fputc(ch, fout);
+			for (k = 0; k < cnt; k++) {
+				/* aargh! */
+				if(fputc(ch, fout) != ch)
+					return ERR_WRITE;
+			}
 		}
 	}
 

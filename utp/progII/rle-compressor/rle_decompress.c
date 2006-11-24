@@ -20,8 +20,7 @@ int decompress(FILE *fin, FILE *fout)
 			ch = buf[r+1];
 			for (k = 0; k < cnt; k++) {
 				/* aargh! */
-				if(fputc(ch, fout) != ch)
-					return ERR_WRITE;
+				fputc(ch, fout);
 			}
 		}
 	}

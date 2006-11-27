@@ -24,6 +24,15 @@
 #include "rle_compress.h"
 #include "rle_decompress.h"
 
+static const char *error_messages[] = {
+	"", /* finished */
+	"", /* invalid command line option, usage() already does it */
+	"input file not found",
+	"could not create output file",
+	"invalid file format",
+	"writing error"
+};
+
 void usage(char *argv[])
 {
 	printf("%s <action> <infile> <outfile>\n"

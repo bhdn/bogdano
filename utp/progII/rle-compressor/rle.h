@@ -4,15 +4,6 @@
 #define BUFFER_SIZE	512
 #define WBUFFER_SIZE	(BUFFER_SIZE*2)
 
-static const char *error_messages[] = {
-	"", /* finished */
-	"", /* invalid command line option, usage() already does it */
-	"input file not found",
-	"could not create output file",
-	"invalid file format",
-	"writing error"
-};
-
 enum actions {
 	ACT_COMPRESS = 0,
 	ACT_DECOMPRESS
@@ -28,3 +19,4 @@ enum errors {
 };
 
 #endif /* ifdef RLE_h */
+

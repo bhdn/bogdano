@@ -42,3 +42,4 @@ int compress(FILE *fin, FILE *fout)
 
 	return ERR_OK;
 }
+

@@ -27,7 +27,7 @@
 static const char *error_messages[] = {
 	"", /* finished */
 	"", /* invalid command line option, usage() already does it */
-	"input file not found",
+	"failed to open input file",
 	"could not create output file",
 	"invalid file format",
 	"writing error"
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
 
 	fin = fopen(argv[2], "rb");
 	if (!fin) {
-		showerr(ERR_INOTFOUND);
-		return ERR_INOTFOUND;
+		showerr(ERR_IFAILED);
+		return ERR_IFAILED;
 	}
 
 	fout = fopen(argv[3], "wb+");

@@ -12,7 +12,7 @@ enum actions {
 enum errors {
 	ERR_OK = 0,
 	ERR_INVARGS,
-	ERR_INOTFOUND,
+	ERR_IFAILED,
 	ERR_OFAILED,
 	ERR_INVFFORMAT,
 	ERR_WRITE

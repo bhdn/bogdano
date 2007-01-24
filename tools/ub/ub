@@ -1,0 +1,151 @@
+#!/usr/bin/make -f
+#
+# Please close this file and move along. It won't work for you.
+#
+# This utility creates new unionfs branches from a given directory. It
+# mounts and umounts all needed hooks.
+#
+.SILENT: $(VERBOSE)
+
+first = $(word 2,$(MAKECMDGOALS))
+second = $(word 3,$(MAKECMDGOALS))
+src = $(if $(first),$(first),$(error "requires source path"))
+dest = $(if $(second),$(second),$(error "requires destination path"))
+_source = $(src)/
+_dest = $(dest)/
+fixed_dest = $(dest)/
+cmdargs = $(first) $(second)
+
+branch_base =
+rootdir = $(branch_base)root/
+metadir = $(branch_base)
+basesdir = $(metadir)bases/
+bindsdir = $(metadir)binds/
+datadir = $(metadir)data/
+hooksdir = $(metadir)hooks/
+bases = $(wildcard $(basesdir)/*)
+label_notmounted = $(rootdir)__not_mounted__
+
+uidentry = $(shell date +%Y%M%d-%H%M%s-%N)
+
+branch_dirs = $(basesdir) $(datadir) $(metadir) $(bindsdir) $(hooksdir)
+DIRS = $(branch_dirs)
+
+commands = 
+
+missing_target help:
+	@echo
+	@echo "ub - the unionfs chroot brancher that is not for you"
+	@echo "valid commands:"
+	@$(foreach cmd,$(commands),echo \
+		"$(cmd) $(foreach arg,$($(cmd)_args),<$(arg)>): $($(cmd)_help)";)
+	@echo
+	@exit 1
+
+$(cmdargs):
+	@true
+
+commands += branch
+branch_help = "create another branched root"
+branch_args = src dst
+branch:
+	mkdir -p $(_dest)$(rootdir) $(_dest)$(datadir)
+	touch $(_dest)$(label_notmounted)
+	cp -af $(_source)$(basesdir) $(_dest)
+	#FIXME abspath is really ugly!
+	ln -sf $(abspath $(_source)$(datadir)) $(_dest)$(basesdir)$(uidentry)
+	cp -af $(_source)$(bindsdir) $(_dest) #FIXME use $(metadir)
+	cp -af $(_source)$(hooksdir) $(_dest)
+
+$(DIRS):
+	mkdir -p $@
+
+# argh
+
+commands += mount
+mount_help = "mounts the branch"
+mount_args = branch
+mount_dirs = $(shell echo -n "$(bases)=ro" | sed s/\\s/=ro:/g)
+mount: $(_source)$(label_notmounted) mount_binds mount_bases
+mount_binds: | mount_bases 
+mount_bases: branch_base = $(_source)
+mount_bases:
+	test -f $(label_notmounted) && \
+		mount -t unionfs -o dirs="$(datadir)=rw:$(mount_dirs)" unionfs $(rootdir) \
+		|| :
+
+
+commands += umount
+umount_help = "umount a given branch"
+umount_args = branch
+umount: umount_bases umount_binds
+umount_bases: branch_base = $(_source)
+umount_bases:
+	test -f $(label_notmounted) || umount $(rootdir)
+umount_binds:
+	:
+
+
+commands += enter
+enter_help = "chroot to the given branch"
+enter_args = branch
+enter: branch_base = $(_source)
+enter: mount
+	chroot $(rootdir) $(if $(cmd),$(cmd),su -)
+
+
+commands += reset
+reset_help = "leave the branch in the same state of the parent"
+reset_args = branch
+reset: branch_base = $(_source)
+reset: umount
+	rm -rf $(datadir)*
+
+commands += init
+init_help = "initialize a new pristine branch"
+init_args = path
+init: branch_base = $(_source)
+init: init_dirs init_bases
+init_dirs:
+	mkdir -p $(branch_dirs) $(rootdir)
+	touch $(label_notmounted)
+	
+init_bases: branch_base = 
+init_bases:
+	ln -sf ../$(rootdir) $(_source)$(basesdir)pristine-$(uidentry)
+
+
+$(_source)$(label_notmounted) $(label_notmounted):
+	if unionctl $(rootdir) --list >& /dev/null; then \
+	  exit 0; \
+	else \
+	  echo "$(rootdir) is already mounted or invalid directory structure"; \
+	  exit 1; \
+	fi;
+
+commands += purge
+purge_help = "umounts and discards a given branch"
+purge_args = branch
+purge: branch_base = $(_source)
+purge: umount
+	rm -rf $(branch_base)
+
+#
+# Branch hooks support, unfinished yet. The idea is that some branches have
+# special domain-specific subcommands that can automate some testing tasks,
+# for example:
+#
+#   ub do-copyrpms pulse-tests/
+#
+# Would automagically copy the just built (or even build!) Pulse RPMS to
+# the chroot. In the same way we could:
+#
+#   ub do-testpkgs pulse-tests/
+#
+# And trigger some automated test set.
+#
+
+do-%: branch_base = $(_source)
+do-%:
+	$(MAKE) -C $(hooksdir)$* $*
+

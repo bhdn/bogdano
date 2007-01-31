@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo /usr/bin/ub $*
+sudo /usr/sbin/ub $*

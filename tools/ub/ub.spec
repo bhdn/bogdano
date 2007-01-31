@@ -8,7 +8,7 @@ Group: Development/Other
 Requires: make
 Requires: /usr/sbin/unionctl
 BuildArch: noarch
-BuildRoot: %{_tmppath}/%{name}
+BuildRoot: %_tmppath/%name-%version
 Url: http://bogdano.freezope.org/Tech/UnionfsBrancher
 
 %description

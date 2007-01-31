@@ -1,6 +1,19 @@
 #!/usr/bin/make -f
 #
 # Yet another chroot builder
+#
+# Copyright (C) 2007
+#     Bogdano Arendartchuk <debogdano@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; version 2 dated June, 1991.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  See file COPYING for details.
+#
 # $Id: conveyor-chroot-builder2 2457 2006-10-27 03:47:49Z bogdano $
 # $HeadURL: https://svn.distro.conectiva/repos/projetos/conveyor/trunk/scripts/conveyor-chroot-builder2 $
 # 

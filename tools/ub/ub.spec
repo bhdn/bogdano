@@ -19,11 +19,14 @@ Requires:
 - unionfs support.
 
 %prep 
+%setup -q
+
+%build
+%configure
+%make
 
 %install
-install -m 755 ub %buildroot/%_sbindir
-install -m 755 sub %buildroot/%_bindir
-install -m 755 conveyor-chroot-builder2 %buildroot/%_bindir
+%makeinstall
 
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -2,8 +2,11 @@ Name: ub
 Summary: unionfs brancher
 Version: 0.01
 Release: 1
+Source: http://bogdano.googlecode.com/files/%name-%version.tar.gz
 License: Apache License
 Group: Development/Other
+Requires: make
+Requires: /usr/sbin/unionctl
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}
 Url: http://bogdano.freezope.org/Tech/UnionfsBrancher
@@ -14,7 +17,7 @@ creating chroots in order to perform small tests.
 
 Requires:
 
-- Smart package manager (labix.org/smart),
+- Smart package manager (optional, at labix.org/smart),
 - gmake, and
 - unionfs support.
 
@@ -36,4 +39,5 @@ rm -rf $RPM_BUILD_ROOT
 %_sbindir/ub
 %_bindir/sub
 %_bindir/conveyor-chroot-builder2
-
+%_datadir/%name/chroot-builder.conf
+%_datadir/%name/common-hooks.conf

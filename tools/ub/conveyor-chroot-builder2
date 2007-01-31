@@ -1,0 +1,86 @@
+#!/usr/bin/make -f
+#
+# Yet another chroot builder
+# $Id: conveyor-chroot-builder2 2457 2006-10-27 03:47:49Z bogdano $
+# $HeadURL: https://svn.distro.conectiva/repos/projetos/conveyor/trunk/scripts/conveyor-chroot-builder2 $
+# 
+# Example usage:
+#
+# $ conveyor-chroot-builder2 \
+#        create \
+#        CHROOT_CONF=chroot-builder.conf \
+#        chrootpath/
+
+configuration_file = \
+	$(if $(CHROOT_CONF),$(CHROOT_CONF),chroot-builder.conf)
+#
+# default configuration values
+#
+stages = 
+package_manager = smart
+channels = 
+default_channels_type = urpmi
+
+
+nocommand:
+	@echo "Hm, seems you don't know how to use this script."
+	@echo "This is an example:"
+	@echo ""
+	@echo "  ./conveyor-chroot-builder2 create my-newly-created-chroot"
+	@echo ""
+	@echo "It will look for 'chroot-builder.conf' containing the configuration"
+	@echo "about the chroot. See the default chroot-builder.conf distributed"
+	@echo "for an example of how to write one."
+	exit 1
+
+include $(configuration_file)
+
+destpath = $(abspath $(word 2,$(MAKECMDGOALS)))
+smart_datadir = $(destpath)/var/lib/smart
+DIRS = $(destpath) $(smart_datadir)
+
+smart_opts = --data-dir=$(smart_datadir) -o rpm-root=$(destpath) \
+	     -o distro-init-file=/you-will-never-find-it \
+	     -o disk-cache=False \
+	     -o psyco=no
+smart = smart $(smart_opts)
+
+urpmi = urpmi
+
+install_stages_targets = $(stages:%=install_stage_$(package_manager)_%)
+configure_channel_targets = $(channels:%=configure_channel_$(package_manager)_%)
+
+# 
+# rules
+#
+
+create: install_packages user_hooks
+
+
+install_packages: $(install_stages_targets)
+$(install_stages_targets): configure_$(package_manager)
+install_stage_smart_%: 
+	$(smart) install --yes $($*_packages)
+
+configure_smart: $(configure_channel_targets)
+	$(smart) update
+
+$(configure_channel_targets): $(smart_datadir)
+configure_channel_smart_%:
+	$(smart) channel --yes --add "$*" \
+		baseurl="$($*_location)" \
+		type="$(if $($*_type),$($*_type),$(default_channels_type))"
+
+
+$(DIRS):
+	mkdir -p $@
+
+
+
+update:
+	pass
+
+user_hooks: SHELL = chroot $(destpath) /bin/sh
+
+%:
+# vim:ft=make

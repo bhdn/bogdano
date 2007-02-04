@@ -1,5 +1,5 @@
 # $Id$
-# From $URL$
+# $URL$
 # 
 # See http://bogdano.freezope.org/Tech/PythonSelfWrapper
 #

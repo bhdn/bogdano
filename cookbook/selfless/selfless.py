@@ -1,3 +1,5 @@
+# $Id$
+# From $URL$
 # 
 # See http://bogdano.freezope.org/Tech/PythonSelfWrapper
 #

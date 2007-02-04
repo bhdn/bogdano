@@ -1,3 +1,19 @@
+# 
+# See http://bogdano.freezope.org/Tech/PythonSelfWrapper
+#
+# Copyright (C) 2007
+#     Bogdano Arendartchuk <debogdano@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; version 2 dated June, 1991.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  See file COPYING for details.
+#
+
 from types import FunctionType
 
 class MetaSelfWrapper(type):

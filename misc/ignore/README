@@ -1,0 +1,8 @@
+"ignore" contains a list of files that usually should be ignored by scm
+tools.
+
+Some sources (newer appear only in the svn log):
+
+http://svn.rpmforge.net/svn/trunk/tools/dconf/config/dconf-example.conf
+
+Bogdano Arendartchuk <debogdano@gmail.com>

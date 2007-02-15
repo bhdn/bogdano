@@ -44,6 +44,11 @@ nocommand:
 	@echo "It will look for 'chroot-builder.conf' containing the configuration"
 	@echo "about the chroot. See the default chroot-builder.conf distributed"
 	@echo "for an example of how to write one."
+	@echo
+	@echo "In the case you're using the development version of your distro you can:"
+	@echo ""
+	@echo "  ./conveyor-chroot-builder2 upgrade my-newly-created-chroot"
+	@echo
 	exit 1
 
 include $(configuration_file)
@@ -90,8 +95,10 @@ $(DIRS):
 
 
 
-update:
-	pass
+upgrade: upgrade_$(package_manager)
+
+upgrade_smart:
+	$(smart) upgrade --update
 
 user_hooks: SHELL = chroot $(destpath) /bin/sh
 

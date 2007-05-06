@@ -38,7 +38,7 @@ hooksdir = $(metadir)hooks/
 bases = $(wildcard $(basesdir)/*)
 label_notmounted = $(rootdir)__not_mounted__
 
-uidentry = $(shell date +%Y%M%d-%H%M%s-%N)
+uidentry = $(shell date +%Y%m%d-%H%M%s-%N)
 
 branch_dirs = $(basesdir) $(datadir) $(metadir) $(bindsdir) $(hooksdir)
 DIRS = $(branch_dirs)

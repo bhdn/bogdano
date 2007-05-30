@@ -9,6 +9,8 @@ Bogdano Arendartchuk <debogdano@gmail.com>
 may/2007
 """
 
+import os
+
 def rellink(src, dst):
     """Creates relative symlinks
 

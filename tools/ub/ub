@@ -38,7 +38,9 @@ hooksdir = $(metadir)hooks/
 bases = $(wildcard $(basesdir)/*)
 label_notmounted = $(rootdir)__not_mounted__
 
-uidentry = $(shell date +%Y%m%d-%H%M%s-%N)
+uidentry = $(shell date +%Y%M%d-%H%M%s-%N)
+
+chroot_builder = conveyor-chroot-builder2
 
 branch_dirs = $(basesdir) $(datadir) $(metadir) $(bindsdir) $(hooksdir)
 DIRS = $(branch_dirs)
@@ -57,6 +59,13 @@ missing_target help:
 $(cmdargs):
 	@true
 
+commands += create
+create_help = "creates new branch from scratch using conveyor-chroot-builder2"
+branch_args = dst
+create: init
+	$(chroot_builder) create $(_source)$(rootdir)
+	rm -f $(_source)$(label_notmounted)
+
 commands += branch
 branch_help = "create another branched root"
 branch_args = src dst
@@ -64,6 +73,8 @@ branch:
 	mkdir -p $(_dest)$(rootdir) $(_dest)$(datadir)
 	touch $(_dest)$(label_notmounted)
 	cp -af $(_source)$(basesdir) $(_dest)
+	$(foreach link,$(wildcard $(basesdir)*),\
+		ln -s `dirname $(link)``readlink $(link)`; )
 	#FIXME abspath is really ugly!
 	ln -sf $(abspath $(_source)$(datadir)) $(_dest)$(basesdir)$(uidentry)
 	cp -af $(_source)$(bindsdir) $(_dest) #FIXME use $(metadir)
@@ -124,7 +135,7 @@ init_dirs:
 	
 init_bases: branch_base = 
 init_bases:
-	ln -sf ../$(rootdir) $(_source)$(basesdir)pristine-$(uidentry)
+	ln -sf $(abspath $(_source)$(rootdir)) $(_source)$(basesdir)$(uidentry)-pristine
 
 
 $(_source)$(label_notmounted) $(label_notmounted):

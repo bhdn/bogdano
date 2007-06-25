@@ -5,8 +5,12 @@ Release: 1
 Source: http://bogdano.googlecode.com/files/%name-%version.tar.gz
 License: Apache License
 Group: Development/Other
-Requires: make
-Requires: /usr/sbin/unionctl
+Requires: make sudo
+%if %mandriva_os
+Requires: unionfs-tools
+%else # at least openzuza uses "unionfs"
+Requires: unionfs
+%endif
 BuildArch: noarch
 BuildRoot: %_tmppath/%name-%version
 Url: http://bogdano.freezope.org/Tech/UnionfsBrancher

@@ -113,7 +113,7 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
             print "pushed revision %s:%s" % (rev, subrev)
 
 def parse_options(args):
-    banner = "Commits a set of bzr changesets to a svn working copy"
+    banner = "Commits a set of bzr changesets onto a svn working copy"
     usage = "%prog -r REV -s BZRBRANCH -d SVNWC"
     parser = optparse.OptionParser(description=banner, usage=usage)
     parser.add_option("-s", "--source", type="string",

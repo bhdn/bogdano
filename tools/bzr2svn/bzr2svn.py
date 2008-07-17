@@ -44,7 +44,7 @@ def svn(*args):
 def bzr_get_changeset(branch, revid):
     # the changes
     delta = branch.repository.get_revision_delta(revid)
-    if delta.modified:
+    if delta.modified or delta.removed or delta.added:
         out = StringIO()
         revspec = "before:revid:" + str(revid)
         before = revisionspec.RevisionSpec.from_string(revspec)

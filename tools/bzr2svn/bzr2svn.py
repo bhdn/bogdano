@@ -4,6 +4,7 @@ import os
 import optparse
 import subprocess
 import locale
+import logging
 from cStringIO import StringIO
 from bzrlib import branch, diff, log, revisionspec
 
@@ -12,17 +13,20 @@ __license__ = "GPL"
 
 encode_locale = locale.getpreferredencoding()
 
+logger = logging.getLogger("bzr2svn")
+
 class Error(Exception):
     pass
 
 def cmd(args, noerror=False, write=None):
-    print "running: %r" % args
+    logger.debug("running command: %s", args)
     pipe = subprocess.Popen(args, stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, stderr=subprocess.STDOUT, shell=False)
     if write:
         out, _ = pipe.communicate(write)
     else:
         out = pipe.stdout.read()
+    logger.debug("output: %s", out)
     error = pipe.wait()
     if error != 0 and not noerror:
         raise Error, "the command %s failed with %d: %s" % (args, error,
@@ -30,6 +34,7 @@ def cmd(args, noerror=False, write=None):
     return out
 
 def apply_patch(dir, changes):
+    logger.debug("patching %s with: %s", dir, changes)
     cmd(["patch", "-d", dir, "-p1"], write=changes)
 
 def svn(*args):
@@ -100,6 +105,7 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
     source_br = branch.Branch.open(source_bzr)
     if end_rev is None:
         end_rev = source_br.revno()
+        logger.debug("latest bzr revision: %s", end_rev)
     for rev in xrange(start_rev, end_rev+1):
         if rev in subcommit:
             revs = bzr_get_subrevs(source_br, rev)
@@ -111,6 +117,9 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
             svn_push_changeset(dest_svn, (log, changes, added, removed))
             source_br.tags.set_tag("pushed-svn", subrev)
             print "pushed revision %s:%s" % (rev, subrev)
+
+def increase_verbosity(*a, **kw):
+    logger.setLevel(logging.DEBUG)
 
 def parse_options(args):
     banner = "Commits a set of bzr changesets onto a svn working copy"
@@ -131,6 +140,8 @@ def parse_options(args):
             action="store_true",
             help="do not commit changes (but leaves the working copy "\
                  "modified)")
+    parser.add_option("-v", "--verbose", action="callback",
+            callback=increase_verbosity)
     opts, args = parser.parse_args()
     if not (opts.source and opts.dest):
         parser.error("both options source and dest are required")
@@ -138,6 +149,7 @@ def parse_options(args):
 
 def main(args):
     try:
+        logging.basicConfig(level=logging.INFO)
         opts, args = parse_options(args)
         convert(opts.source, opts.dest, opts.subcommit, opts.start_rev,
                 opts.end_rev)

@@ -7,6 +7,9 @@ import locale
 from cStringIO import StringIO
 from bzrlib import branch, diff, log, revisionspec
 
+__author__ = "Bogdano Arendartchuk <debogdano@gmail.com>"
+__license__ = "GPL"
+
 encode_locale = locale.getpreferredencoding()
 
 #TODO list of special commits whose subcommits must be commited

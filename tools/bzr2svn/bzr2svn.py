@@ -12,9 +12,6 @@ __license__ = "GPL"
 
 encode_locale = locale.getpreferredencoding()
 
-#TODO list of special commits whose subcommits must be commited
-#     individually
-
 class Error(Exception):
     pass
 

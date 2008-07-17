@@ -116,7 +116,7 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
                     bzr_get_changeset(source_br, subrev)
             svn_push_changeset(dest_svn, (log, changes, added, removed))
             source_br.tags.set_tag("pushed-svn", subrev)
-            print "pushed revision %s:%s" % (rev, subrev)
+            logger.info("pushed revision %s:%s" % (rev, subrev))
 
 def increase_verbosity(*a, **kw):
     logger.setLevel(logging.DEBUG)

@@ -6,6 +6,7 @@ import subprocess
 import locale
 import logging
 from cStringIO import StringIO
+
 from bzrlib import branch, diff, log, revisionspec
 
 __author__ = "Bogdano Arendartchuk <debogdano@gmail.com>"

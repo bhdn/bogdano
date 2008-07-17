@@ -79,7 +79,7 @@ def svn_push_changeset(svn_dir, (log, changes, added, removed), commit=True):
     apply_patch(svn_dir, changes)
     if added:
         svn_add(svn_dir, added)
-    if removed:
+    if removed and commit:
         svn_rm(svn_dir, removed)
     if commit:
         svn_commit(svn_dir, log)

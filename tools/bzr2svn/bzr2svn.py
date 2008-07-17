@@ -75,13 +75,14 @@ def svn_commit(svn_dir, log):
     # seems -F - is broken on subversion for now
     cmd(["svn", "ci", svn_dir, "-F", "/dev/stdin"], write=log)
 
-def svn_push_changeset(svn_dir, (log, changes, added, removed)):
+def svn_push_changeset(svn_dir, (log, changes, added, removed), commit=True):
     apply_patch(svn_dir, changes)
     if added:
         svn_add(svn_dir, added)
     if removed:
         svn_rm(svn_dir, removed)
-    svn_commit(svn_dir, log)
+    if commit:
+        svn_commit(svn_dir, log)
 
 def svn_ensure_untouched(svn_dir):
     # svn st would be better
@@ -98,7 +99,7 @@ def bzr_get_subrevs(source_br, rev):
     return revids
 
 def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
-        end_rev=None):
+        end_rev=None, commit=False):
     """Converts commits from a bzr branch to a svn working copy"""
     prev = 0
     svn_ensure_untouched(dest_svn)
@@ -114,7 +115,8 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
         for subrev in revs:
             log, changes, added, removed = \
                     bzr_get_changeset(source_br, subrev)
-            svn_push_changeset(dest_svn, (log, changes, added, removed))
+            svn_push_changeset(dest_svn, (log, changes, added, removed),
+                    commit)
             source_br.tags.set_tag("pushed-svn", subrev)
             logger.info("pushed revision %s:%s" % (rev, subrev))
 
@@ -136,8 +138,8 @@ def parse_options(args):
     parser.add_option("-i", "--interesting", type="int", default=[],
             action="append", dest="subcommit",
             help="commit all the merged revisions from the given revision")
-    parser.add_option("-n", "--dry-run", default=False,
-            action="store_true",
+    parser.add_option("-n", "--dry-run", default=True,
+            action="store_false", dest="commit",
             help="do not commit changes (but leaves the working copy "\
                  "modified)")
     parser.add_option("-v", "--verbose", action="callback",
@@ -152,7 +154,7 @@ def main(args):
         logging.basicConfig(level=logging.INFO)
         opts, args = parse_options(args)
         convert(opts.source, opts.dest, opts.subcommit, opts.start_rev,
-                opts.end_rev)
+                opts.end_rev, opts.commit)
     except Error, e:
         sys.stderr.write("error: %s\n" % e)
         return 1

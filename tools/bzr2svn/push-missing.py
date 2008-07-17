@@ -71,7 +71,7 @@ def bzr_latest_rev(bzr_dir):
     return rev
 
 def svn_add(svn_dir, files):
-    args = ["svn", "add"]
+    args = ["svn", "add", "--force"]
     files = [os.path.join(svn_dir, file) for file in files]
     args.extend(files)
     cmd(args)

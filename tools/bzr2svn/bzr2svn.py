@@ -58,7 +58,9 @@ def bzr_get_changeset(branch, revid):
             for name, fileid, type in delta.added]
     removed = [name.encode(encode_locale)
             for name, fileid, type in delta.removed]
-    return log, changes, added, removed
+    renamed = [(old.encode(encode_locale), new.encode(encode_locale))
+            for old, new, fileid, type, _, __ in delta.renamed]
+    return log, changes, added, removed, renamed
 
 def svn_add(svn_dir, files):
     args = ["svn", "add", "--force"]
@@ -76,12 +78,21 @@ def svn_commit(svn_dir, log):
     # seems -F - is broken on subversion for now
     cmd(["svn", "ci", svn_dir, "-F", "/dev/stdin"], write=log)
 
-def svn_push_changeset(svn_dir, (log, changes, added, removed), commit=True):
+def svn_mv(svn_dir, old, new):
+    oldpath = os.path.join(svn_dir, old)
+    newpath = os.path.join(svn_dir, new)
+    cmd(["svn", "mv", oldpath, newpath])
+
+def svn_push_changeset(svn_dir, (log, changes, added, removed, renamed),
+        commit=True):
     apply_patch(svn_dir, changes)
     if added:
         svn_add(svn_dir, added)
     if removed and commit:
         svn_rm(svn_dir, removed)
+    if renamed:
+        for old, new in renamed:
+            svn_mv(svn_dir, old, new)
     if commit:
         svn_commit(svn_dir, log)
 
@@ -114,10 +125,10 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
         else:
             revs = [source_br.get_rev_id(rev)]
         for subrev in revs:
-            log, changes, added, removed = \
+            log, changes, added, removed, renamed = \
                     bzr_get_changeset(source_br, subrev)
-            svn_push_changeset(dest_svn, (log, changes, added, removed),
-                    commit)
+            svn_push_changeset(dest_svn,
+                    (log, changes, added, removed, renamed), commit)
             source_br.tags.set_tag("pushed-svn", subrev)
             logger.info("pushed revision %s:%s" % (rev, subrev))
 

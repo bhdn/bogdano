@@ -76,7 +76,7 @@ def svn_push_changeset(svn_dir, (log, changes, added, removed)):
         svn_add(svn_dir, added)
     if removed:
         svn_rm(svn_dir, removed)
-    #svn_commit(svn_dir, log)
+    svn_commit(svn_dir, log)
 
 def svn_ensure_untouched(svn_dir):
     # svn st would be better

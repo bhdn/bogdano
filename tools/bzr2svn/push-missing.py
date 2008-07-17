@@ -35,22 +35,6 @@ def apply_patch(dir, changes):
 def svn(*args):
     return cmd(["svn"] + list(args))
 
-def parse_options(args):
-    banner = "Commits a set of bzr changesets to a svn working copy"
-    parser = optparse.OptionParser(description=banner)
-    parser.add_option("-s", "--source", type="string",
-            help="source bzr branch")
-    parser.add_option("-d", "--dest", type="string",
-            help="destination svn working copy")
-    parser.add_option("-r", "--start-rev", type="int", default=None,
-            help="start working from the given revision")
-    parser.add_option("-e", "--end-rev", type="int", default=None,
-            help="stops working on the given revision")
-    opts, args = parser.parse_args()
-    if not (opts.source and opts.dest):
-        parser.error("both options source and dest are required")
-    return opts, args
-
 def bzr_get_changeset(branch, rev):
     # the changes
     out = StringIO()
@@ -64,10 +48,10 @@ def bzr_get_changeset(branch, rev):
     # the log message
     log = branch.repository.get_revision(rev_id).message
     delta = branch.repository.get_revision_delta(rev_id)
-    added = [name.encode(decode_locale)
-            for name, fileid, type, _, __ in delta.added]
-    removed = [name.encode(decode_locale)
-            for name, fileid, type, _, __ in delta.removed]
+    added = [name.encode(encode_locale)
+            for name, fileid, type in delta.added]
+    removed = [name.encode(encode_locale)
+            for name, fileid, type in delta.removed]
     return log, changes, added, removed
 
 def svn_add(svn_dir, files):

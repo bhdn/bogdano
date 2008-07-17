@@ -111,6 +111,22 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
                     source_br.get_rev_id(subrev))
             print "pushed revision %s" % (subrev)
 
+def parse_options(args):
+    banner = "Commits a set of bzr changesets to a svn working copy"
+    parser = optparse.OptionParser(description=banner)
+    parser.add_option("-s", "--source", type="string",
+            help="source bzr branch")
+    parser.add_option("-d", "--dest", type="string",
+            help="destination svn working copy")
+    parser.add_option("-r", "--start-rev", type="int", default=None,
+            help="start working from the given revision")
+    parser.add_option("-e", "--end-rev", type="int", default=None,
+            help="stops working on the given revision")
+    opts, args = parser.parse_args()
+    if not (opts.source and opts.dest):
+        parser.error("both options source and dest are required")
+    return opts, args
+
 def main(args):
     try:
         opts, args = parse_options(args)

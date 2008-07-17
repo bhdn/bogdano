@@ -43,17 +43,22 @@ def svn(*args):
 
 def bzr_get_changeset(branch, revid):
     # the changes
-    out = StringIO()
-    revspec = "before:revid:" + str(revid)
-    before = revisionspec.RevisionSpec.from_string(revspec)
-    before_revid = before.as_revision_id(branch)
-    tree1 = branch.repository.revision_tree(before_revid)
-    tree2 = branch.repository.revision_tree(revid)
-    diff.show_diff_trees(tree1, tree2, out)
-    changes = out.getvalue()
+    delta = branch.repository.get_revision_delta(revid)
+    if delta.modified:
+        out = StringIO()
+        revspec = "before:revid:" + str(revid)
+        before = revisionspec.RevisionSpec.from_string(revspec)
+        before_revid = before.as_revision_id(branch)
+        tree1 = branch.repository.revision_tree(before_revid)
+        tree2 = branch.repository.revision_tree(revid)
+        diff.show_diff_trees(tree1, tree2, out)
+        changes = out.getvalue()
+    else:
+        # otherwise patch will complain about no useful text in the
+        # generated diff
+        changes = None
     # the log message
     log = branch.repository.get_revision(revid).message
-    delta = branch.repository.get_revision_delta(revid)
     added = [name.encode(encode_locale)
             for name, fileid, type in delta.added]
     removed = [name.encode(encode_locale)
@@ -85,7 +90,8 @@ def svn_mv(svn_dir, old, new):
 
 def svn_push_changeset(svn_dir, (log, changes, added, removed, renamed),
         commit=True):
-    apply_patch(svn_dir, changes)
+    if changes:
+        apply_patch(svn_dir, changes)
     if added:
         svn_add(svn_dir, added)
     if removed and commit:

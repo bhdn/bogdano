@@ -26,7 +26,7 @@ def cmd(args, noerror=False, write=None):
 
 def diffstat_l(changes):
     out = cmd(["diffstat", "-l", "-p0"], write=changes)
-    lines = out.split("\n")
+    lines = out.splitlines()
     return lines
 
 def apply_patch(dir, changes):

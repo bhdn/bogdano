@@ -125,7 +125,6 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
             svn_push_changeset(dest_svn, (log, changes, added, removed))
             source_br.tags.set_tag("pushed-svn",
                     source_br.get_rev_id(subrev))
-            bzr_tag(source_bzr, "pushed-svn", subrev)
             print "pushed revision %s" % (subrev)
 
 def main(args):

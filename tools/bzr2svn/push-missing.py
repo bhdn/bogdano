@@ -35,19 +35,19 @@ def apply_patch(dir, changes):
 def svn(*args):
     return cmd(["svn"] + list(args))
 
-def bzr_get_changeset(branch, rev):
+def bzr_get_changeset(branch, revid):
     # the changes
     out = StringIO()
-    rev_id = branch.get_rev_id(rev)
-    before = revisionspec.RevisionSpec.from_string("before:" + str(rev))
+    revspec = "before:revid:" + str(revid)
+    before = revisionspec.RevisionSpec.from_string(revspec)
     before_revid = before.as_revision_id(branch)
     tree1 = branch.repository.revision_tree(before_revid)
-    tree2 = branch.repository.revision_tree(rev_id)
+    tree2 = branch.repository.revision_tree(revid)
     diff.show_diff_trees(tree1, tree2, out)
     changes = out.getvalue()
     # the log message
-    log = branch.repository.get_revision(rev_id).message
-    delta = branch.repository.get_revision_delta(rev_id)
+    log = branch.repository.get_revision(revid).message
+    delta = branch.repository.get_revision_delta(revid)
     added = [name.encode(encode_locale)
             for name, fileid, type in delta.added]
     removed = [name.encode(encode_locale)
@@ -88,7 +88,8 @@ def svn_ensure_untouched(svn_dir):
 def bzr_get_subrevs(source_br, rev):
     subrevs = log.calculate_view_revisions(source_br, rev, rev, 'reverse',
             None, True, True)
-    return [rev for revid, rev, depth in subrevs[::-1]]
+    revids = [revid for revid, rev, depth in subrevs[::-1]]
+    return revids
 
 def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
         end_rev=None):
@@ -102,14 +103,13 @@ def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
         if rev in subcommit:
             revs = bzr_get_subrevs(source_br, rev)
         else:
-            revs = [rev]
+            revs = [source_br.get_rev_id(rev)]
         for subrev in revs:
             log, changes, added, removed = \
                     bzr_get_changeset(source_br, subrev)
             svn_push_changeset(dest_svn, (log, changes, added, removed))
-            source_br.tags.set_tag("pushed-svn",
-                    source_br.get_rev_id(subrev))
-            print "pushed revision %s" % (subrev)
+            source_br.tags.set_tag("pushed-svn", subrev)
+            print "pushed revision %s:%s" % (rev, subrev)
 
 def parse_options(args):
     banner = "Commits a set of bzr changesets to a svn working copy"
@@ -122,6 +122,9 @@ def parse_options(args):
             help="start working from the given revision")
     parser.add_option("-e", "--end-rev", type="int", default=None,
             help="stops working on the given revision")
+    parser.add_option("-i", "--interesting", type="int", default=[],
+            action="append", dest="subcommit",
+            help="commit all the merged revisions from the given revision")
     opts, args = parser.parse_args()
     if not (opts.source and opts.dest):
         parser.error("both options source and dest are required")
@@ -130,7 +133,8 @@ def parse_options(args):
 def main(args):
     try:
         opts, args = parse_options(args)
-        convert(opts.source, opts.dest, [], opts.start_rev, opts.end_rev)
+        convert(opts.source, opts.dest, opts.subcommit, opts.start_rev,
+                opts.end_rev)
     except Error, e:
         sys.stderr.write("error: %s\n" % e)
         return 1

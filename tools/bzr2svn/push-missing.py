@@ -3,6 +3,11 @@ import sys
 import os
 import optparse
 import subprocess
+import locale
+from cStringIO import StringIO
+from bzrlib import branch, diff, log, revisionspec
+
+encode_locale = locale.getpreferredencoding()
 
 #TODO list of special commits whose subcommits must be commited
 #     individually
@@ -35,11 +40,6 @@ def apply_patch(dir, changes):
 def svn(*args):
     return cmd(["svn"] + list(args))
 
-def bzr(subcmd, *args):
-    noerror = subcmd == "diff"
-    args = ["bzr", subcmd] + list(args)
-    return cmd(args, noerror=noerror)
-
 def parse_options(args):
     banner = "Commits a set of bzr changesets to a svn working copy"
     parser = optparse.OptionParser(description=banner)
@@ -56,22 +56,33 @@ def parse_options(args):
         parser.error("both options source and dest are required")
     return opts, args
 
-def bzr_get_changeset(bzr_dir, rev):
-    changes = bzr("diff", "-c", str(rev), bzr_dir)
-    log = bzr("log", "-r", str(rev))
-    return log, changes
-
-def bzr_tag(bzr_dir, name, rev):
-    cmd(["bzr", "tag", "--force", "-r", str(rev), "-d", bzr_dir])
-
-def bzr_latest_rev(bzr_dir):
-    out = cmd(["bzr", "log", "-r", "-1", "--line"])
-    rawrev = out.split(":", 1)[0]
-    rev = int(rawrev)
-    return rev
+def bzr_get_changeset(branch, rev):
+    # the changes
+    out = StringIO()
+    rev_id = branch.get_rev_id(rev)
+    before = revisionspec.RevisionSpec.from_string("before:" + str(rev))
+    before_revid = before.as_revision_id(branch)
+    tree1 = branch.repository.revision_tree(before_revid)
+    tree2 = branch.repository.revision_tree(rev_id)
+    diff.show_diff_trees(tree1, tree2, out)
+    changes = out.getvalue()
+    # the log message
+    log = branch.repository.get_revision(rev_id).message
+    delta = branch.repository.get_revision_delta(rev_id)
+    added = [name.encode(decode_locale)
+            for name, fileid, type, _, __ in delta.added]
+    removed = [name.encode(decode_locale)
+            for name, fileid, type, _, __ in delta.removed]
+    return log, changes, added, removed
 
 def svn_add(svn_dir, files):
     args = ["svn", "add", "--force"]
+    files = [os.path.join(svn_dir, file) for file in files]
+    args.extend(files)
+    cmd(args)
+
+def svn_rm(svn_dir, files):
+    args = ["svn", "rm"]
     files = [os.path.join(svn_dir, file) for file in files]
     args.extend(files)
     cmd(args)
@@ -80,11 +91,12 @@ def svn_commit(svn_dir, log):
     # seems -F - is broken on subversion for now
     cmd(["svn", "ci", svn_dir, "-F", "/dev/stdin"], write=log)
 
-def svn_push_changeset(svn_dir, (log, changes)):
+def svn_push_changeset(svn_dir, (log, changes, added, removed)):
     files = diffstat_l(changes)
     apply_patch(svn_dir, changes)
-    svn_add(svn_dir, files)
-    svn_commit(svn_dir, log)
+    svn_add(svn_dir, added)
+    svn_rm(svn_dir, removed)
+    #svn_commit(svn_dir, log)
 
 def svn_ensure_untouched(svn_dir):
     # svn st would be better
@@ -93,25 +105,32 @@ def svn_ensure_untouched(svn_dir):
         raise Error, "sorry mate, I refuse to work on a working copy "\
                 "with uncommited changes"
 
+def bzr_get_subrevs(source_br, rev):
+    subrevs = log.calculate_view_revisions(source_br, rev, rev, 'reverse',
+            None, True, True)
+    return [rev for revid, rev, depth in subrevs[::-1]]
+
 def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,
         end_rev=None):
     """Converts commits from a bzr branch to a svn working copy"""
     prev = 0
     svn_ensure_untouched(dest_svn)
+    source_br = branch.Branch.open(source_bzr)
     if end_rev is None:
-        end_rev = bzr_latest_rev(source_bzr)
+        end_rev = source_br.revno()
     for rev in xrange(start_rev, end_rev+1):
         if rev in subcommit:
-            #FIXME obtain here the list of subrevisions
-            revs = [rev]
+            revs = bzr_get_subrevs(source_br, rev)
         else:
             revs = [rev]
         for subrev in revs:
-            log, changes = bzr_get_changeset(source_bzr, subrev)
-            svn_push_changeset(dest_svn, (log, changes))
+            log, changes, added, removed = \
+                    bzr_get_changeset(source_br, subrev)
+            svn_push_changeset(dest_svn, (log, changes, added, removed))
+            source_br.tags.set_tag("pushed-svn",
+                    source_br.get_rev_id(subrev))
             bzr_tag(source_bzr, "pushed-svn", subrev)
-            print "pushed revision %s: %s" % (subrev,
-                    changes.split("\n")[0])
+            print "pushed revision %s" % (subrev)
 
 def main(args):
     try:

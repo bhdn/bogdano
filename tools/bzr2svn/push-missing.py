@@ -29,11 +29,6 @@ def cmd(args, noerror=False, write=None):
                 out)
     return out
 
-def diffstat_l(changes):
-    out = cmd(["diffstat", "-l", "-p0"], write=changes)
-    lines = out.splitlines()
-    return lines
-
 def apply_patch(dir, changes):
     cmd(["patch", "-d", dir, "-p0"], write=changes)
 
@@ -92,7 +87,6 @@ def svn_commit(svn_dir, log):
     cmd(["svn", "ci", svn_dir, "-F", "/dev/stdin"], write=log)
 
 def svn_push_changeset(svn_dir, (log, changes, added, removed)):
-    files = diffstat_l(changes)
     apply_patch(svn_dir, changes)
     svn_add(svn_dir, added)
     svn_rm(svn_dir, removed)

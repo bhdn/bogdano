@@ -25,7 +25,7 @@ def cmd(args, noerror=False, write=None):
     return out
 
 def diffstat_l(changes):
-    out = cmd(["diffstat", "-l"], write=changes)
+    out = cmd(["diffstat", "-l", "-p0"], write=changes)
     lines = out.split("\n")
     return lines
 

@@ -88,8 +88,8 @@ def svn_ensure_untouched(svn_dir):
     # svn st would be better
     out = cmd(["svn", "diff", svn_dir])
     if out:
-        raise Error, "sorry mate, I refuse to work on a working copy "\
-                "with uncommited changes"
+        raise Error, "cannot touch a working copy with "\
+                "uncommited changes"
 
 def bzr_get_subrevs(source_br, rev):
     subrevs = log.calculate_view_revisions(source_br, rev, rev, 'forward',

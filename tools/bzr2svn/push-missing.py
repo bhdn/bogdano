@@ -30,7 +30,7 @@ def cmd(args, noerror=False, write=None):
     return out
 
 def apply_patch(dir, changes):
-    cmd(["patch", "-d", dir, "-p0"], write=changes)
+    cmd(["patch", "-d", dir, "-p1"], write=changes)
 
 def svn(*args):
     return cmd(["svn"] + list(args))

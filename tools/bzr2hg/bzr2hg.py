@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
+import stat
 import optparse
 import subprocess
 import locale
@@ -64,14 +65,31 @@ def bzr_get_changeset(branch, revid):
         # generated diff
         changes = None
     # the log message
-    log = branch.repository.get_revision(revid).message
-    added = [name.encode(encode_locale)
-            for name, fileid, type in delta.added]
+    revision = branch.repository.get_revision(revid)
+    log = revision.message.encode("utf8", "replace") # hg enforces utf-8
+    author = revision.get_apparent_author()
+    # collect the file attributes changes
+    attr_changed = [path
+                    for (path, fileid, kind, cont, attr)
+                    in delta.modified if attr]
+    attr_changed.extend(path
+                    for (path, path2, fileid, kind, cont, attr)
+                    in delta.renamed if attr)
+    inventory = dict(tree2.inventory.entries())
+    executables = [(path, d[path].executable) for path in attr_changed]
+    added = []
+    newdirs = []
+    for name, fileid, type in delta.added:
+        encoded = name.encode(encode_locale)
+        added.append(encoded)
+        if type == "directory":
+            newdirs.append(encoded)
     removed = [name.encode(encode_locale)
             for name, fileid, type in delta.removed]
     renamed = [(old.encode(encode_locale), new.encode(encode_locale))
             for old, new, fileid, type, _, __ in delta.renamed]
-    return log, changes, added, removed, renamed
+    return (author, log, changes, added, removed, renamed, executables,
+            newdirs)
 
 def hg_add(hg_dir, files):
     args = ["hg", "add"]
@@ -85,28 +103,56 @@ def hg_rm(hg_dir, files):
     args.extend(files)
     cmd(args, workdir=hg_dir)
 
-def hg_commit(hg_dir, log):
+def hg_commit(hg_dir, log, author=None):
     # seems -F - is broken on subversion for now
-    cmd(["hg", "ci", hg_dir, "-l", "-"], write=log, workdir=hg_dir)
+    args = ["hg", "ci", "-l", "-"]
+    if author:
+        args.append("--user")
+        args.append(author)
+    args.append(".")
+    cmd(args, write=log, workdir=hg_dir)
 
 def hg_mv(hg_dir, old, new):
     oldpath = os.path.join(hg_dir, old)
     newpath = os.path.join(hg_dir, new)
     cmd(["hg", "mv", oldpath, newpath], workdir=hg_dir)
 
-def hg_push_changeset(hg_dir, (log, changes, added, removed, renamed),
+def hg_chmod(hg_dir, executables):
+    for path, executable in executables:
+        st = os.stat(path)
+        if executable:
+            st.st_mode |= 0100
+        else:
+            st.st_mode &= ~0111
+        logger.debug("chmod %s to %o" % (path, st.st_mode))
+        os.chmod(path, mode)
+
+def hg_mkdir(hg_dir, dirs):
+    for dir in dirs:
+        path = os.path.join(hg_dir, dir)
+        if not os.path.exists(path):
+            logger.debug("creating directory %s" % path)
+            os.mkdir(path)
+
+def hg_push_changeset(hg_dir, 
+        (author, log, changes, added, removed, renamed, executables,
+            newdirs),
         commit=True):
     if renamed:
         for old, new in renamed:
             hg_mv(hg_dir, old, new)
+    if newdirs:
+        hg_mkdir(hg_dir, newdirs)
     if changes:
         apply_patch(hg_dir, changes)
     if added:
         hg_add(hg_dir, added)
     if removed and commit:
         hg_rm(hg_dir, removed)
+    if executables:
+        hg_chmod(hg_dir, executables)
     if commit:
-        hg_commit(hg_dir, log)
+        hg_commit(hg_dir, log, author=author)
 
 def hg_ensure_untouched(hg_dir):
     # hg st would be better
@@ -135,10 +181,11 @@ def convert(source_bzr, dest_hg, subcommit=[], start_rev=None,
         else:
             revs = [source_br.get_rev_id(rev)]
         for subrev in revs:
-            log, changes, added, removed, renamed = \
-                    bzr_get_changeset(source_br, subrev)
+            (author, log, changes, added, removed, renamed, executables,
+                    newdirs) = bzr_get_changeset(source_br, subrev)
             hg_push_changeset(dest_hg,
-                    (log, changes, added, removed, renamed), commit)
+                    (author, log, changes, added, removed, renamed,
+                        executables, newdirs), commit)
             source_br.tags.set_tag("pushed-hg", subrev)
             logger.info("pushed revision %s:%s" % (rev, subrev))
 

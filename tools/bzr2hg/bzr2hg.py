@@ -68,15 +68,19 @@ def bzr_get_changeset(branch, revid):
     revision = branch.repository.get_revision(revid)
     log = revision.message.encode("utf8", "replace") # hg enforces utf-8
     author = revision.get_apparent_author()
+    date = "%d %d" % (revision.timestamp, -revision.timezone) # bizarre hg format
     # collect the file attributes changes
+    inventory = dict(tree2.inventory.entries())
     attr_changed = [path
                     for (path, fileid, kind, cont, attr)
                     in delta.modified if attr]
     attr_changed.extend(path
                     for (path, path2, fileid, kind, cont, attr)
                     in delta.renamed if attr)
-    inventory = dict(tree2.inventory.entries())
-    executables = [(path, d[path].executable) for path in attr_changed]
+    attr_changed.extend(path
+                    for path, fileid, kind in delta.added
+                    if inventory[path].executable)
+    executables = [(path, inventory[path].executable) for path in attr_changed]
     added = []
     newdirs = []
     for name, fileid, type in delta.added:
@@ -88,7 +92,7 @@ def bzr_get_changeset(branch, revid):
             for name, fileid, type in delta.removed]
     renamed = [(old.encode(encode_locale), new.encode(encode_locale))
             for old, new, fileid, type, _, __ in delta.renamed]
-    return (author, log, changes, added, removed, renamed, executables,
+    return (date, author, log, changes, added, removed, renamed, executables,
             newdirs)
 
 def hg_add(hg_dir, files):
@@ -103,12 +107,15 @@ def hg_rm(hg_dir, files):
     args.extend(files)
     cmd(args, workdir=hg_dir)
 
-def hg_commit(hg_dir, log, author=None):
+def hg_commit(hg_dir, log, author=None, date=None):
     # seems -F - is broken on subversion for now
     args = ["hg", "ci", "-l", "-"]
     if author:
         args.append("--user")
         args.append(author)
+    if date:
+        args.append("--date")
+        args.append(date)
     args.append(".")
     cmd(args, write=log, workdir=hg_dir)
 
@@ -119,12 +126,13 @@ def hg_mv(hg_dir, old, new):
 
 def hg_chmod(hg_dir, executables):
     for path, executable in executables:
-        st = os.stat(path)
+        path = os.path.join(hg_dir, path)
+        mode = os.stat(path).st_mode
         if executable:
-            st.st_mode |= 0100
+            mode |= 0100
         else:
-            st.st_mode &= ~0111
-        logger.debug("chmod %s to %o" % (path, st.st_mode))
+            mode &= ~0111
+        logger.debug("chmod %s to %o" % (path, mode))
         os.chmod(path, mode)
 
 def hg_mkdir(hg_dir, dirs):
@@ -134,8 +142,16 @@ def hg_mkdir(hg_dir, dirs):
             logger.debug("creating directory %s" % path)
             os.mkdir(path)
 
+def hg_tag(hg_dir, tag, date=None):
+    args = ["hg", "tag"]
+    if date:
+        args.append("--date")
+        args.append(date)
+    args.append(tag)
+    cmd(args, workdir=hg_dir)
+
 def hg_push_changeset(hg_dir, 
-        (author, log, changes, added, removed, renamed, executables,
+        (date, author, log, changes, added, removed, renamed, executables,
             newdirs),
         commit=True):
     if renamed:
@@ -152,7 +168,7 @@ def hg_push_changeset(hg_dir,
     if executables:
         hg_chmod(hg_dir, executables)
     if commit:
-        hg_commit(hg_dir, log, author=author)
+        hg_commit(hg_dir, log, author=author, date=date)
 
 def hg_ensure_untouched(hg_dir):
     # hg st would be better
@@ -175,18 +191,23 @@ def convert(source_bzr, dest_hg, subcommit=[], start_rev=None,
     if end_rev is None:
         end_rev = source_br.revno()
         logger.debug("latest bzr revision: %s", end_rev)
+    source_tags = source_br.tags.get_reverse_tag_dict()
     for rev in xrange(start_rev, end_rev+1):
         if rev in subcommit:
             revs = bzr_get_subrevs(source_br, rev)
         else:
             revs = [source_br.get_rev_id(rev)]
         for subrev in revs:
-            (author, log, changes, added, removed, renamed, executables,
+            (date, author, log, changes, added, removed, renamed, executables,
                     newdirs) = bzr_get_changeset(source_br, subrev)
             hg_push_changeset(dest_hg,
-                    (author, log, changes, added, removed, renamed,
+                    (date, author, log, changes, added, removed, renamed,
                         executables, newdirs), commit)
-            source_br.tags.set_tag("pushed-hg", subrev)
+            tags = source_tags.get(subrev)
+            if tags:
+                for tag in tags:
+                    tag = tag.encode(encode_locale)
+                    hg_tag(dest_hg, tag, date=date)
             logger.info("pushed revision %s:%s" % (rev, subrev))
 
 def increase_verbosity(*a, **kw):
@@ -231,3 +252,5 @@ def main(args):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+
+# vim:ts=4:sw=4:et

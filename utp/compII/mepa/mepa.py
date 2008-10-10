@@ -254,7 +254,7 @@ class InstructionSet:
         # TODO não está claro se o valor lido deve ser "um inteiro já
         # interpretado" ou o valor de um caractere cru (que seria o de se
         # esperar em uma implementação mais genérica)
-        value = int(sys.stdin.read(1))
+        value = int(sys.stdin.readline())
         self.mem.push(value)
 
     def i_impr(self):
@@ -315,6 +315,10 @@ class InstructionSet:
     # - CREN - carregar endereços
     # ambos não implementados agora por estarem em estado WTF
 
+class ReplaceByPosition:
+    def __init__(self, name):
+        self.name = name
+
 class MEPA:
 
     def __init__(self, debug=False):
@@ -342,9 +346,31 @@ class MEPA:
 
     def assemble_program(self, source):
         code = []
+        labels = {}
+        lines = []
         for line in source:
-
             # handle comments
+            if line.startswith(";"):
+                continue
+            found = line.find(";")
+            if found != -1:
+                line = line[:found]
+
+            line = line.strip()
+            index = line.find(":")
+            if index == -1:
+                lines.append(line)
+            else:
+                name, extra = line[:index].strip(), line[index:].strip()
+                if name:
+                    labels[name] = None
+                    lines.append(ReplaceByPosition(name))
+        codepos = 0
+        for line in lines:
+            # handle comments
+            if isinstance(line, ReplaceByPosition):
+                labels[line.name] = codepos
+                continue
             if line.startswith(";"):
                 continue
             found = line.find(";")
@@ -360,10 +386,25 @@ class MEPA:
                 args = rawargs[0].split(",")
             else:
                 args = []
-            codeargs = [int(arg) for arg in args]
+            codeargs = []
+            for arg in args:
+                try:
+                    value = int(arg)
+                except ValueError:
+                    value = arg
+                codeargs.append(value)
             instr = self.instr.get(name.lower())
             code.append((instr, codeargs))
-        return code
+            codepos += 1
+        newcode = []
+        for instr, codeargs in code:
+            if codeargs and (
+                    instr.__name__ == self.instr.i_dsvs.__name__ or
+                    instr.__name__ == self.instr.i_dsvf.__name__):
+                codeargs = [labels[codeargs[0]]]
+            pair = (instr, codeargs)
+            newcode.append(pair)
+        return newcode
 
     def dump(self, output):
         self.mem.dump(output)

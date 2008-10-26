@@ -1,0 +1,58 @@
+commit 40e3230ca949dc4ec7b33a614db7383608cf4f31
+Author: Bogdano Arendartchuk <debogdano@gmail.com>
+Date:   Wed Oct 17 11:00:17 2007 -0200
+
+    Add option -F to not complain about ignored files in pathspec
+    
+    It is far easier for git to know what are the ignored files than to the
+    caller of git to figure out what should not be put the command line.
+    
+    This commit adds the option -F which will make git not complain about
+    ignored files being added in the pathspec.
+---
+ builtin-add.c |   11 ++++++++---
+ 1 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/builtin-add.c b/builtin-add.c
+index f9a6580..2bbd6ce 100644
+--- a/builtin-add.c
++++ b/builtin-add.c
+@@ -14,7 +14,7 @@
+ #include "revision.h"
+ 
+ static const char builtin_add_usage[] =
+-"git-add [-n] [-v] [-f] [--interactive | -i] [-u] [--refresh] [--] <filepattern>...";
++"git-add [-n] [-v] [-f] [-F] [--interactive | -i] [-u] [--refresh] [--] <filepattern>...";
+ 
+ static int take_worktree_changes;
+ static const char *excludes_file;
+@@ -157,7 +157,8 @@ static const char ignore_error[] =
+ int cmd_add(int argc, const char **argv, const char *prefix)
+ {
+ 	int i, newfd;
+-	int verbose = 0, show_only = 0, ignored_too = 0, refresh_only = 0;
++	int verbose = 0, show_only = 0, ignored_too = 0, refresh_only = 0,
++	    ignore_pathspec = 0;
+ 	const char **pathspec;
+ 	struct dir_struct dir;
+ 	int add_interactive = 0;
+@@ -197,6 +198,10 @@ int cmd_add(int argc, const char **argv, const char *prefix)
+ 			ignored_too = 1;
+ 			continue;
+ 		}
++		if (!strcmp(arg, "-F")) {
++			ignore_pathspec = 1;
++			continue;
++		}
+ 		if (!strcmp(arg, "-v")) {
+ 			verbose = 1;
+ 			continue;
+@@ -245,7 +250,7 @@ int cmd_add(int argc, const char **argv, const char *prefix)
+ 	if (read_cache() < 0)
+ 		die("index file corrupt");
+ 
+-	if (dir.ignored_nr) {
++	if (dir.ignored_nr && !ignore_pathspec) {
+ 		fprintf(stderr, ignore_error);
+ 		for (i = 0; i < dir.ignored_nr; i++) {
+ 			fprintf(stderr, "%s\n", dir.ignored[i]->name);

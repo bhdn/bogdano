@@ -12,7 +12,7 @@ import optparse
 
 __author__ = "Bogdano Arendartchuk <debogdano@gmail.com>"
 
-MEMORY_SIZE = 128
+MEMORY_SIZE = 256
 DATA_SEGMENT = 0
 D_SEGMENT = MEMORY_SIZE / 2
 STACK_SEGMENT = D_SEGMENT + MEMORY_SIZE / 8
@@ -135,25 +135,25 @@ class InstructionSet:
 
     def i_soma(self):
         "Soma dois valores"
-        value1, value2 = self.mem.pop(), self.mem.pop()
+        value2, value1 = self.mem.pop(), self.mem.pop()
         sum = value1 + value2
         self.mem.push(sum)
 
     def i_subt(self):
         "Subtrai dois valores"
-        value1, value2 = self.mem.pop(), self.mem.pop()
+        value2, value1 = self.mem.pop(), self.mem.pop()
         sub = value1 - value2
         self.mem.push(sub)
 
     def i_mult(self):
         "Multiplica dois valores"
-        value1, value2 = self.mem.pop(), self.mem.pop()
+        value2, value1 = self.mem.pop(), self.mem.pop()
         mul = value1 * value2
         self.mem.push(mul)
 
     def i_divi(self):
         "Divide (de inteiros) dois valores"
-        value1, value2 = self.mem.pop(), self.mem.pop()
+        value2, value1 = self.mem.pop(), self.mem.pop()
         div = value1 // value2
         self.mem.push(div)
 
@@ -289,6 +289,7 @@ class InstructionSet:
         k = self.mem.pop()
         addr = self.mem.pop()
         self.mem.push(self.regs.pc + 1)
+        self.mem.push(self.regs.bp)
         self.mem.push(k)
         self.regs.pc = addr
 
@@ -297,11 +298,12 @@ class InstructionSet:
         n = self.mem.pop()
         k = self.mem.pop()
         oldk = self.mem.pop()
+        oldbp = self.mem.pop()
         nextpc = self.mem.pop()
+        self.mem.set(D_SEGMENT + oldk, oldbp)
         sp = self.regs.sp - n
-        bp = self.mem.get(D_SEGMENT + oldk)
         self.regs.sp = sp
-        self.regs.bp = bp
+        self.regs.bp = oldbp
         self.regs.pc = nextpc
 
     def i_enpr(self):
@@ -398,10 +400,9 @@ class MEPA:
             codepos += 1
         newcode = []
         for instr, codeargs in code:
-            if codeargs and (
-                    instr.__name__ == self.instr.i_dsvs.__name__ or
-                    instr.__name__ == self.instr.i_dsvf.__name__):
-                codeargs = [labels[codeargs[0]]]
+            for i, arg in enumerate(codeargs[:]):
+                if isinstance(arg, basestring):
+                    codeargs[i] = labels[codeargs[0]]
             pair = (instr, codeargs)
             newcode.append(pair)
         return newcode

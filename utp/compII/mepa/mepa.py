@@ -12,10 +12,11 @@ import optparse
 
 __author__ = "Bogdano Arendartchuk <debogdano@gmail.com>"
 
-MEMORY_SIZE = 256
+MEMORY_SIZE = 128
 DATA_SEGMENT = 0
-D_SEGMENT = MEMORY_SIZE / 2
-STACK_SEGMENT = D_SEGMENT + MEMORY_SIZE / 8
+STACK_SEGMENT = 0
+D_SEGMENT = MEMORY_SIZE - 10
+MAX_STACK_SEGMENT = D_SEGMENT - 1
 
 class Error(Exception):
     pass
@@ -29,23 +30,39 @@ class AssertFailed(Error):
 class EmptyStack(Error):
     pass
 
+class StackOverflow(Error):
+    pass
+
 class ProgramFinished(Error):
     pass
 
+def extension(f):
+    "Indica que a função anotada não faz parte da MEPA 'oficial'"
+    f.extension = True
+    return f
+
 class Memory:
 
-    def __init__(self, size, registers):
-        self.data = [0x01010101] * size
+    def __init__(self, size, registers, tag=False):
+        self.data = [999999] * size
         self.regs = registers
+        self.showtags = tag
+        self.tags = {}
 
     def pop(self):
-        value = self.data[self.regs.sp]
         if self.regs.sp < STACK_SEGMENT:
             raise EmptyStack
+        value = self.data[self.regs.sp]
+        try:
+            del self.tags[self.regs.sp]
+        except KeyError:
+            pass
         self.regs.sp -= 1
         return value
 
     def push(self, value):
+        if self.regs.sp >= MAX_STACK_SEGMENT:
+            raise StackOverflow
         self.regs.sp += 1
         self.data[self.regs.sp] = value
 
@@ -54,6 +71,9 @@ class Memory:
 
     def get(self, address):
         return self.data[address]
+
+    def tag(self, address, tag):
+        self.tags[address] = tag
 
     def dump(self, output):
         i = 0
@@ -75,7 +95,11 @@ class Memory:
             if i % columns == 0 or matchseg:
                 output.write("\n%3d: " % i)
                 matchseg = False
-            output.write("%8d " % self.data[i])
+            if self.showtags:
+                tag = self.tags.get(i, "")
+            else:
+                tag = ""
+            output.write("%8d%s " % (self.data[i], tag))
             i += 1
         output.write("\n")
 
@@ -156,6 +180,13 @@ class InstructionSet:
         value2, value1 = self.mem.pop(), self.mem.pop()
         div = value1 // value2
         self.mem.push(div)
+
+    @extension
+    def i_modu(self): # extensao
+        "Resto da divisao de dois valores"
+        value2, value1 = self.mem.pop(), self.mem.pop()
+        mod = value1 % value2
+        self.mem.push(mod)
 
     def i_invr(self):
         "Inverte sinal (WTF?!) de um valor"
@@ -261,7 +292,7 @@ class InstructionSet:
         "Escreve o valor da pilha para a saída padrão"
         value = self.mem.pop()
         # TODO buffers?
-        sys.stdout.write(str(value))
+        sys.stdout.write(str(value) + "\n")
 
     def i_inpp(self):
         "Inicial execução do programa (???)"
@@ -289,8 +320,11 @@ class InstructionSet:
         k = self.mem.pop()
         addr = self.mem.pop()
         self.mem.push(self.regs.pc + 1)
+        self.mem.tag(self.regs.sp, "N")
         self.mem.push(self.regs.bp)
+        self.mem.tag(self.regs.sp, "B")
         self.mem.push(k)
+        self.mem.tag(self.regs.sp, "K")
         self.regs.pc = addr
 
     def i_rtpr(self):
@@ -312,6 +346,55 @@ class InstructionSet:
         self.regs.bp = self.regs.sp + 1
         self.mem.set(D_SEGMENT + k, self.regs.bp)
 
+    # Instrucoes de rotulo descritas em :
+    # http://tinyurl.com/descricao-instrucoes-mepa
+
+    def i_dsvr(self):
+        "Desvia para rótulo"
+        # Argh!
+        k = self.mem.pop()
+        j = self.mem.pop()
+        p = self.mem.pop()
+        #while k != j:
+        #    bp = self.mem.get(D_SEGMENT + k)
+        #    nextbp = self.mem.get(bp-2)
+        #    self.mem.set(D_SEGMENT + k, bp)
+        #    k = self.mem.get(bp-1)
+        bp = self.mem.get(D_SEGMENT + j)
+        self.regs.bp = bp
+        self.regs.pc = p
+        # sp vai ser ajustado por enrt
+
+    def i_enrt(self):
+        "Entrada de rótulo"
+        # Bizarro!
+        n = self.mem.pop()
+        k = self.mem.pop()
+        self.regs.sp = self.mem.get(D_SEGMENT + k) + n - 1
+
+    def i_cren(self):
+        "Põe endereço absoluto"
+        addr = self.mem.pop()
+        k = self.mem.pop()
+        absaddr = self.mem.get(D_SEGMENT + k) + addr
+        self.mem.push(absaddr)
+
+    def i_crvi(self):
+        addr = self.mem.pop()
+        k = self.mem.pop()
+        absaddr = self.mem.get(D_SEGMENT + k) + addr
+        refaddr = self.mem.get(absaddr)
+        value = self.mem.get(refaddr)
+        self.mem.push(value)
+
+    def i_armi(self):
+        addr = self.mem.pop()
+        k = self.mem.pop()
+        value = self.mem.pop()
+        absaddr = self.mem.get(D_SEGMENT + k) + addr
+        refaddr = self.mem.get(absaddr)
+        self.mem.set(refaddr, value)
+
     # TODO:
     # - ENTR - ir para rótulo
     # - CREN - carregar endereços
@@ -323,9 +406,9 @@ class ReplaceByPosition:
 
 class MEPA:
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, tag=False):
         self.regs = RegisterSet()
-        self.mem = Memory(MEMORY_SIZE, self.regs)
+        self.mem = Memory(MEMORY_SIZE, self.regs, tag=tag)
         self.instr = InstructionSet(self.regs, self.mem)
         self.debug = debug
 
@@ -350,6 +433,7 @@ class MEPA:
         code = []
         labels = {}
         lines = []
+        extwarns = {}
         for line in source:
             # handle comments
             if line.startswith(";"):
@@ -363,10 +447,12 @@ class MEPA:
             if index == -1:
                 lines.append(line)
             else:
-                name, extra = line[:index].strip(), line[index:].strip()
+                name, extra = line[:index].strip(), line[index+1:].strip()
                 if name:
                     labels[name] = None
                     lines.append(ReplaceByPosition(name))
+                if extra:
+                    lines.append(extra)
         codepos = 0
         for line in lines:
             # handle comments
@@ -396,6 +482,11 @@ class MEPA:
                     value = arg
                 codeargs.append(value)
             instr = self.instr.get(name.lower())
+            if getattr(instr, "extension", 0) and \
+                    not extwarns.get(name.lower(), 0):
+                sys.stdout.write("aviso: instrucao nao faz parte "
+                        "da especificacao da MEPA: %s\n" % name)
+                extwarns[name.lower()] = 1
             code.append((instr, codeargs))
             codepos += 1
         newcode = []
@@ -420,12 +511,15 @@ def parse_options():
     parser.add_option("-i", "--inspect", action="store_true",
                 help="dump regs and current instruction",
                 default=False)
+    parser.add_option("-t", "--tagmem", action="store_true",
+            help="show tags of saved pointers in memory dump",
+            default=False)
     opts, args = parser.parse_args()
     return opts, args
 
 def main(args):
     opts, args = parse_options()
-    mepa = MEPA(debug=opts.inspect)
+    mepa = MEPA(debug=opts.inspect, tag=opts.tagmem)
     for arg in args:
         source = open(arg)
         code = mepa.assemble_program(source)

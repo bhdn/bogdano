@@ -1,0 +1,4 @@
+program Foo;
+begin
+	faz_algo(10)
+end.

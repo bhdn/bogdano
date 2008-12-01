@@ -1,0 +1,3 @@
+Manual do usuario esta em doc/mu.txt
+
+Manual do programador esta em doc/mp.t2t (fontes) e doc/mp.pdf.

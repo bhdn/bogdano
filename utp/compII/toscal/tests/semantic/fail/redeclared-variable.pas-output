@@ -1,0 +1,2 @@
+reading from stdin
+error: line 4 position 16: semantic error: symbol already defined: b

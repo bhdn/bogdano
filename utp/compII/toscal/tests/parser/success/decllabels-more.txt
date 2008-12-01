@@ -1,0 +1,5 @@
+program Foo;
+label 1, 2, 3;
+begin
+	goto 1
+end.

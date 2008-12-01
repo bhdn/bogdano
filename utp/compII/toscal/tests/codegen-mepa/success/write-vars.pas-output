@@ -1,0 +1,32 @@
+reading from stdin
+INPP
+DSVS _start
+L0:
+ENPR 1
+CRCT 22222
+ARMZ 1, -4	; param var
+RTPR 1, 0
+L1:
+ENPR 1
+		; allocated param var at -4
+AMEM 1		; local var
+CRVL 1, -4	; param var
+CRCT -100
+MULT
+ARMZ 1, 0	; local var
+CRVL 1, 0	; local var
+IMPR
+AMEM 1
+CHPR L0, 1
+CRCT -1000
+MULT
+IMPR
+DMEM 1		; dealloc locals
+RTPR 1, 1
+_start:
+AMEM 1		; local var
+AMEM 1
+CRCT 444
+CHPR L1, 0
+ARMZ 0, 0	; local var
+PARA

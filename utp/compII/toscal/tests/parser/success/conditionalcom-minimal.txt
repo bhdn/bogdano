@@ -1,0 +1,5 @@
+program Foo;
+begin
+	if a = 10 then
+		b := 10
+end.

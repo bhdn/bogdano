@@ -1,0 +1,7 @@
+; vim:ft=asm
+; Programa de exemplo para exercitar as instruções do primeiro quatro
+
+crct 666
+crct 1000
+soma
+assert 1666

@@ -1,0 +1,5 @@
+program Foo;
+begin
+	faz_algo(10 + 10, y[10] + 5, b * j);
+	a[5] := y[11] + 666.0
+end. 

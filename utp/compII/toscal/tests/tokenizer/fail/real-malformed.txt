@@ -1,0 +1,6 @@
+i0=-10.0
+i2=.1
+i1=1.
+there is a bug here, it cant handle invalid stuff in the last position of
+the line
+i_1=20000

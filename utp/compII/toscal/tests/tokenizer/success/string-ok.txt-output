@@ -1,0 +1,15 @@
+TOK_CHAR: ?
+TOK_SEMICOLON: ;
+TOK_IDENTIFIER: c
+TOK_ASSIGNMENT: :=
+TOK_STRING: 10 + 10
+TOK_SEMICOLON: ;
+TOK_CHAR: \
+TOK_STRING: \!
+TOK_STRING: 
+TOK_CHAR: "
+TOK_STRING: este eh um exemplo\
+de string que tem mais do que uma 
+linha
+TOK_CHAR: 
+

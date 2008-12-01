@@ -1,0 +1,8 @@
+reading from stdin
+warning: using variable not initialized: x on foo
+warning: unused variable on foo: j
+warning: unused variable on foo: L
+warning: unused variable on foo: t
+warning: possible data loss in conversion between real and char
+warning: possible data loss in conversion between integer and char
+error: line 20 position 18: semantic error: invalid symbol passed by reference: foo

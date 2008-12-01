@@ -1,0 +1,127 @@
+reading from stdin
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_BEGIN at state_S
+on state: state_Block
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_KW_REPEAT at state_CommandBlock
+on state: state_Command
+on state: state_RepeatCom
+fetched TOK_KW_BEGIN at state_RepeatCom
+on state: state_Command
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_IDENTIFIER at state_CommandBlock
+on state: state_Command
+on state: state_Command_ProcedureCallOrAssignment
+ensured TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+fetched TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+ensured TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+fetched TOK_INTEGER at state_Command_ProcedureCallOrAssignment
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+fetched TOK_SEMICOLON at state_Fator
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+leaving state_Expression
+leaving state_Command_ProcedureCallOrAssignment
+leaving state_Command
+ensured TOK_SEMICOLON at state_CommandBlock
+fetched TOK_IDENTIFIER at state_CommandBlock
+on state: state_Command
+on state: state_Command_ProcedureCallOrAssignment
+ensured TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+fetched TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+ensured TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+fetched TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+on state: state_FatorI
+ensured TOK_IDENTIFIER at state_FatorI
+fetched TOK_PLUS at state_FatorI
+leaving state_FatorI
+leaving state_Fator
+leaving state_Term
+fetched TOK_INTEGER at state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+fetched TOK_SEMICOLON at state_Fator
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+leaving state_Expression
+leaving state_Command_ProcedureCallOrAssignment
+leaving state_Command
+ensured TOK_SEMICOLON at state_CommandBlock
+fetched TOK_IDENTIFIER at state_CommandBlock
+on state: state_Command
+on state: state_Command_ProcedureCallOrAssignment
+ensured TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+fetched TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+ensured TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+fetched TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+on state: state_FatorI
+ensured TOK_IDENTIFIER at state_FatorI
+fetched TOK_ASTERISK at state_FatorI
+leaving state_FatorI
+leaving state_Fator
+fetched TOK_INTEGER at state_Term
+on state: state_Fator
+fetched TOK_KW_END at state_Fator
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+leaving state_Expression
+leaving state_Command_ProcedureCallOrAssignment
+leaving state_Command
+ensured TOK_KW_END at state_CommandBlock
+fetched TOK_KW_UNTIL at state_CommandBlock
+leaving state_CommandBlock
+leaving state_Command
+ensured TOK_KW_UNTIL at state_RepeatCom
+fetched TOK_IDENTIFIER at state_RepeatCom
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+on state: state_FatorI
+ensured TOK_IDENTIFIER at state_FatorI
+fetched TOK_GREATERTHAN at state_FatorI
+leaving state_FatorI
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+fetched TOK_INTEGER at state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+fetched TOK_KW_END at state_Fator
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+leaving state_Expression
+leaving state_RepeatCom
+leaving state_Command
+ensured TOK_KW_END at state_CommandBlock
+fetched TOK_DOT at state_CommandBlock
+leaving state_CommandBlock
+leaving state_Block
+ensured TOK_DOT at state_S
+fetched TOK_EOF at state_S
+leaving state_S
+ensured TOK_EOF at parser_check

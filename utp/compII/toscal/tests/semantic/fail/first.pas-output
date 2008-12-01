@@ -1,0 +1,2 @@
+reading from stdin
+error: line 5 position 32: semantic error: referenced an undefined symbol: reference_an_unsigned_procedure

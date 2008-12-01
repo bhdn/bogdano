@@ -1,0 +1,3 @@
+reading from stdin
+warning: unused variable on p: j
+warning: unused variable on test_unused_variable: y

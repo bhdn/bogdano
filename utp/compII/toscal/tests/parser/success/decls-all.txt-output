@@ -1,0 +1,87 @@
+reading from stdin
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_LABEL at state_S
+on state: state_Block
+on state: state_DeclLabels
+ensured TOK_KW_LABEL at state_DeclLabels
+fetched TOK_INTEGER at state_DeclLabels
+ensured TOK_INTEGER at state_DeclLabels
+fetched TOK_COMMA at state_DeclLabels
+ensured TOK_COMMA at state_DeclLabels
+fetched TOK_INTEGER at state_DeclLabels
+ensured TOK_INTEGER at state_DeclLabels
+fetched TOK_COMMA at state_DeclLabels
+ensured TOK_COMMA at state_DeclLabels
+fetched TOK_INTEGER at state_DeclLabels
+ensured TOK_INTEGER at state_DeclLabels
+fetched TOK_SEMICOLON at state_DeclLabels
+ensured TOK_SEMICOLON at state_DeclLabels
+fetched TOK_KW_CONST at state_DeclLabels
+leaving state_DeclLabels
+on state: state_DeclConst
+ensured TOK_KW_CONST at state_DeclConst
+fetched TOK_IDENTIFIER at state_DeclConst
+on state: state_DefineConst
+ensured TOK_IDENTIFIER at state_DefineConst
+fetched TOK_EQUAL at state_DefineConst
+ensured TOK_EQUAL at state_DefineConst
+fetched TOK_INTEGER at state_DefineConst
+fetched TOK_SEMICOLON at state_DefineConst
+leaving state_DefineConst
+ensured TOK_SEMICOLON at state_DeclConst
+fetched TOK_IDENTIFIER at state_DeclConst
+on state: state_DefineConst
+ensured TOK_IDENTIFIER at state_DefineConst
+fetched TOK_EQUAL at state_DefineConst
+ensured TOK_EQUAL at state_DefineConst
+fetched TOK_REAL at state_DefineConst
+fetched TOK_SEMICOLON at state_DefineConst
+leaving state_DefineConst
+ensured TOK_SEMICOLON at state_DeclConst
+fetched TOK_KW_VAR at state_DeclConst
+leaving state_DeclConst
+on state: state_DeclVar
+ensured TOK_KW_VAR at state_DeclVar
+fetched TOK_IDENTIFIER at state_DeclVar
+on state: state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COMMA at state_VariablesList
+ensured TOK_COMMA at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COLON at state_VariablesList
+ensured TOK_COLON at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+on state: state_Type
+ensured TOK_IDENTIFIER at state_Type
+fetched TOK_SEMICOLON at state_Type
+leaving state_Type
+leaving state_VariablesList
+ensured TOK_SEMICOLON at state_DeclVar
+fetched TOK_KW_BEGIN at state_DeclVar
+leaving state_DeclVar
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_KW_GOTO at state_CommandBlock
+on state: state_Command
+on state: state_BranchingCommand
+ensured TOK_KW_GOTO at state_BranchingCommand
+fetched TOK_INTEGER at state_BranchingCommand
+ensured TOK_INTEGER at state_BranchingCommand
+fetched TOK_KW_END at state_BranchingCommand
+leaving state_BranchingCommand
+leaving state_Command
+ensured TOK_KW_END at state_CommandBlock
+fetched TOK_DOT at state_CommandBlock
+leaving state_CommandBlock
+leaving state_Block
+ensured TOK_DOT at state_S
+fetched TOK_EOF at state_S
+leaving state_S
+ensured TOK_EOF at parser_check

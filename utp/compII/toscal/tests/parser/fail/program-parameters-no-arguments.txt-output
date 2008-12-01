@@ -1,0 +1,10 @@
+reading from stdin
+error: line 1 position 27: unexpected token TOK_RPARENTHESIS, expected TOK_IDENTIFIER
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_LPARENTHESIS at state_S
+ensured TOK_LPARENTHESIS at state_S
+fetched TOK_RPARENTHESIS at state_S

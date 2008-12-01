@@ -1,0 +1,17 @@
+reading from stdin
+error: line 12 position 5: unexpected token TOK_OPENINGBRACKET, expected TOK_COMMA
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_VAR at state_S
+on state: state_Block
+on state: state_DeclVar
+ensured TOK_KW_VAR at state_DeclVar
+fetched TOK_IDENTIFIER at state_DeclVar
+on state: state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_OPENINGBRACKET at state_VariablesList

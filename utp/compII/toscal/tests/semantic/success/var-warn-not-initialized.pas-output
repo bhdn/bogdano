@@ -1,0 +1,3 @@
+reading from stdin
+warning: using variable not initialized: p on foo
+warning: using variable not initialized: z on foo

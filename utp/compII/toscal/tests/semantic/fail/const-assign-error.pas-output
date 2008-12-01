@@ -1,0 +1,2 @@
+reading from stdin
+error: line 8 position 12: semantic error: can't assign to a constant: Bla

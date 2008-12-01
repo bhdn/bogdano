@@ -1,0 +1,6 @@
+program Foo;
+var
+	nome_da_variavel, outra_variavel : tipo;
+begin
+	nome_da_variavel := 1
+end.

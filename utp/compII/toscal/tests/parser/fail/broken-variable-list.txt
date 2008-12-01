@@ -1,0 +1,15 @@
+(* This patch was originally intended to exercise a bug in the grammar,
+ * which has been "solved", it has been placed here to ensure it won't
+ * repeat again
+ *)
+
+(* This test shows that the grammar is flawed by using Variable instead of
+ * Identifier in the definition of a variable list. The following could
+ * was not supposed to work, but it does.
+ *)
+program Foo;
+var
+	bla[666] : string;
+begin
+	do_something
+end. 

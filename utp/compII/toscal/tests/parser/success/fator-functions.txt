@@ -1,0 +1,20 @@
+program Foo;
+
+var a, b : int;
+
+function sum(var a, b : int) : int;
+begin
+	sum := a + b
+end;
+
+function bla(a, b : int; g : char) : string;
+begin
+	do_something_else
+end;
+
+
+begin
+	a := 0 + bla(10, 20, '?');
+	b := sum(1, 0 * sum(1, 1 * sum(1, 2 * sum(1, a[5]))));
+	print(b)
+end.

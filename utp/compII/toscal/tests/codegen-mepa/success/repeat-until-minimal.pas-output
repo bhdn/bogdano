@@ -1,0 +1,60 @@
+reading from stdin
+INPP
+DSVS _start
+_start:
+AMEM 1		; local var
+AMEM 1		; local var
+AMEM 1		; local var
+AMEM 1		; local var
+CRCT 0
+ARMZ 0, 0	; local var
+CRCT 0
+ARMZ 0, 1	; local var
+CRCT 0
+ARMZ 0, 2	; local var
+R0:		; repeat statement
+CRVL 0, 0	; local var
+CRCT 1
+SOMA
+ARMZ 0, 0	; local var
+CRVL 0, 0	; local var
+CRCT 9
+CMIG
+DSVF R0		; until statement
+R1:		; repeat statement
+CRVL 0, 1	; local var
+CRCT 1
+SOMA
+ARMZ 0, 1	; local var
+CRVL 0, 2	; local var
+CRCT 1
+SOMA
+ARMZ 0, 2	; local var
+CRVL 0, 2	; local var
+CRCT 9
+CMIG
+DSVF R1		; until statement
+CRCT 0
+ARMZ 0, 2	; local var
+CRCT 0
+ARMZ 0, 1	; local var
+CRCT 0
+ARMZ 0, 3	; local var
+R2:		; repeat statement
+CRVL 0, 1	; local var
+CRCT 1
+SOMA
+ARMZ 0, 1	; local var
+CRVL 0, 2	; local var
+CRCT 1
+SOMA
+ARMZ 0, 2	; local var
+CRVL 0, 3	; local var
+CRCT 10
+SOMA
+ARMZ 0, 3	; local var
+CRVL 0, 2	; local var
+CRCT 9
+CMIG
+DSVF R2		; until statement
+PARA

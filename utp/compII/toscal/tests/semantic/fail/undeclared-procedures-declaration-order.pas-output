@@ -1,0 +1,2 @@
+reading from stdin
+error: line 7 position 2: semantic error: referenced an undefined symbol: b

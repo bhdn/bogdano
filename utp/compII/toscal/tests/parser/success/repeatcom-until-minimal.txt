@@ -1,0 +1,6 @@
+program Foo;
+begin
+	repeat
+		a := x + 1
+	until a > 10
+end.

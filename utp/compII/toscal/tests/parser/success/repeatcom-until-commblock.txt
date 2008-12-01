@@ -1,0 +1,9 @@
+program Foo;
+begin
+	repeat
+	begin
+		a := 10;
+		j := a + 20;
+		l := b * 100
+	end until a > 10
+end.

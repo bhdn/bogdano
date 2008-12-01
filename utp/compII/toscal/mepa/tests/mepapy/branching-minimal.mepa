@@ -1,0 +1,24 @@
+; vim:ft=asm
+; Testa as primeiras instruções de desvio de programa
+
+; 22 => contador
+inpp
+crct 0
+armz 0, 22 ; zera posição 22
+
+crvl 0, 22
+crct 5
+cmme    ; compara se menor que dez (mantendo loop)
+dsvf 12 ; se falso ir para a instrução 9
+
+crvl 0, 22 ; carrega operando 22 
+crct 1  ; carrega operando const 1
+soma    ; soma opera em 22 com const 1
+armz 0, 22 ; armazena o resultado em 22
+
+dsvs 3  ; vai para o início do loop
+
+; 11
+crvl 0, 22
+assert 5
+; fin

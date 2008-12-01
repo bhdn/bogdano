@@ -1,0 +1,7 @@
+program Foo;
+label 1, 2, 3;
+const Foo = 10; Bar = 20.0;
+var zing, zang : string;
+begin
+	goto 1
+end.

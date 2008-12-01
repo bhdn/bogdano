@@ -1,0 +1,46 @@
+reading from stdin
+error: line 4 position 12: unexpected token TOK_REAL, expected TOK_INTEGER
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_VAR at state_S
+on state: state_Block
+on state: state_DeclVar
+ensured TOK_KW_VAR at state_DeclVar
+fetched TOK_IDENTIFIER at state_DeclVar
+on state: state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COLON at state_VariablesList
+ensured TOK_COLON at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+on state: state_Type
+ensured TOK_IDENTIFIER at state_Type
+fetched TOK_SEMICOLON at state_Type
+leaving state_Type
+leaving state_VariablesList
+ensured TOK_SEMICOLON at state_DeclVar
+fetched TOK_KW_BEGIN at state_DeclVar
+leaving state_DeclVar
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_IDENTIFIER at state_CommandBlock
+on state: state_Command
+on state: state_Command_ProcedureCallOrAssignment
+ensured TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+fetched TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+ensured TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+fetched TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+on state: state_FatorI
+ensured TOK_IDENTIFIER at state_FatorI
+fetched TOK_OPENINGBRACKET at state_FatorI
+on state: state_VariableArrayIndexing
+ensured TOK_OPENINGBRACKET at state_VariableArrayIndexing
+fetched TOK_REAL at state_VariableArrayIndexing

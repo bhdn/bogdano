@@ -1,0 +1,27 @@
+program Foo;
+const
+	name : string = 'foo bar Baz';
+var
+	nome : integer;
+	donde : integer;
+	_while : char;
+	_if : string;
+	then_: char;
+begin
+
+procedure Foo(nome : string; endereco int);
+begin
+var
+	zzzz : string;
+	end;
+
+	zzz := faz_algo();
+
+	if zzz = 'blabla' then
+		writeln('vai chover!');
+	else
+		writeln('seila');
+	end if;
+end.
+
+end.

@@ -1,0 +1,2 @@
+(* testing whether an unexpected end of file is properly handled *)
+program

@@ -1,0 +1,2 @@
+reading from stdin
+error: line 11 position 13: semantic error: symbol already defined: f

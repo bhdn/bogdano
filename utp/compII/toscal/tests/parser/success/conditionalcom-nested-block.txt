@@ -1,0 +1,11 @@
+program Foo;
+begin
+	if a = 10 then
+	begin
+		if b = 20 then
+			if c = 30 then
+				g := 10
+			else
+				k := 10
+	end
+end.

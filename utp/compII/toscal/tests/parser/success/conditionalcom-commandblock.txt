@@ -1,0 +1,11 @@
+program Foo;
+begin
+	a := 1;
+	if a = 10 then
+	begin
+		b := 10;
+		c := g + 10;
+		y := foo;
+		j := bar
+	end
+end.

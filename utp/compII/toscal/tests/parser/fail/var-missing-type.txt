@@ -1,0 +1,6 @@
+program Foo;
+var
+	nome_da_variavel, outra_variavel : tipo;
+	one_more_cool_variable :;
+begin
+end.

@@ -1,0 +1,6 @@
+; vim:ft=asm
+crct 10, 20, 30, 40
+assert 40
+assert 30
+assert 20
+assert 10

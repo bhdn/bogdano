@@ -1,0 +1,9 @@
+program Foo;
+begin
+	repeat
+		if j > 10 then
+			a := x + 1
+		else
+			k := 0
+	until a > 10
+end.

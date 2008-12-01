@@ -1,0 +1,14 @@
+program Programa;
+var blarg : integer;
+    f : char;
+
+procedure Procedimento;
+var foo, bar, baz : integer;
+begin
+	foo := 10;
+end;
+
+begin
+	Procedimento;
+	blarg := '6' + 1;
+end.

@@ -1,0 +1,6 @@
+program Foo;
+begin
+	faz_algo(10, z);
+	faz_outra_coisa;
+	a := b
+end.

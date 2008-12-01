@@ -1,0 +1,4 @@
+reading from stdin
+warning: possible data loss in conversion between integer and char
+warning: possible data loss in conversion between integer and char
+error: line 20 position 12: semantic error: wrong number of arguments for f (expected 3, found 2)

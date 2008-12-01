@@ -1,0 +1,5 @@
+program Foo;
+var a : ztringh;
+begin
+	x := a[10]
+end.

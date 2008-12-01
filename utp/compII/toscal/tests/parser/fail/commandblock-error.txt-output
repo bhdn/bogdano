@@ -1,0 +1,43 @@
+reading from stdin
+error: line 5 position 2: unexpected token TOK_PLUS, expected begin or an assignment
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_VAR at state_S
+on state: state_Block
+on state: state_DeclVar
+ensured TOK_KW_VAR at state_DeclVar
+fetched TOK_IDENTIFIER at state_DeclVar
+on state: state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COMMA at state_VariablesList
+ensured TOK_COMMA at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COMMA at state_VariablesList
+ensured TOK_COMMA at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COMMA at state_VariablesList
+ensured TOK_COMMA at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COLON at state_VariablesList
+ensured TOK_COLON at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+on state: state_Type
+ensured TOK_IDENTIFIER at state_Type
+fetched TOK_SEMICOLON at state_Type
+leaving state_Type
+leaving state_VariablesList
+ensured TOK_SEMICOLON at state_DeclVar
+fetched TOK_KW_BEGIN at state_DeclVar
+leaving state_DeclVar
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_PLUS at state_CommandBlock
+on state: state_Command

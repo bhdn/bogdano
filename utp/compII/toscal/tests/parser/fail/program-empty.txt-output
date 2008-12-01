@@ -1,0 +1,15 @@
+reading from stdin
+error: line 3 position 3: unexpected token TOK_KW_END, expected begin or an assignment
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_BEGIN at state_S
+on state: state_Block
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_KW_END at state_CommandBlock
+on state: state_Command

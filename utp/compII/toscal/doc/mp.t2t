@@ -1,0 +1,255 @@
+Analisador para Pascal reduzido - Manual do Programador
+Bogdano Arendartchuk e Caio Ferreira
+%%date(%d/%m/%Y)
+
+================================
+
+%%TOC
+
+================================
+
++ Análise sintática e léxica +
+
+++ Observações diversas ++
+
+Caracteríscas do tokenizador que divergem com Pascal:
+
+- Strings podem ocupar mais do que uma linha, algo como:
+
+```
+x := 'blalbla
+blabla
+blabal'
+```
+
+- Strings e identificadores não podem ocupar mais do que 255 bytes
+  (puramente arbitrário, talvez será arrumado mais tarde).
+
+- Há distinção entre maiúsculas e minúsiculas (isso é importante para
+  palavras-chave).
+
+- Comentários são feitos apenas com ``(* comentário *)``, podem ser multilinha
+  e não não suportam nenhum tipo de escape (como ``\*``).
+
+
+++ Mensagens de erro ++
+
+Há três tipos de erros no analisador sintático: erros de entrada, erros de
+análise léxica e erros de análise sintática.
+
+Erros de entrada são relacionados a problemas durante a leitura do arquivo.
+São associados a alguma de sistema (falha de disco, problema de rede, etc).
+A mensagem de erro começa com "read error: " e a descrição depende do que a
+função ``strerror`` retornar (e depende de ``errno``).
+
+Erros do tokenizador têm a mensagem "tokenizer error" e descrevem problemas
+de formação dos tokens. O número da linha e a posição indicam aonde foi o
+erro (ou pelo menos tentam!). Um exemplo seria
+``error: on line 3 position 5: error parsing token``.
+
+Erros do analisador começam apenas com "error:" e descrevem problemas aonde
+a entrada possui algum token inesperado. A mensagem indica a posição no
+arquivo, qual era o token esperado e qual foi o token encontrado. Um
+exemplo seria:
+
+```
+error: line 0 position 12: unexpected token TOK_IDENTIFIER, expected
+TOK_KW_PROGRAM
+```
+
+==================================================
+
+++ Organização do código ++
+
+O código está dividido por funcionalidades:
+
+- ``input.c`` trata de ler de um arquivo e tomar nota da posição da
+  linha e da posição que está sendo lida.
+- ``tokenize.c`` tem a máquina de estados para gerar os tokens, bem
+  como funções para representar os tokens na saída padrão.
+- ``parser.c`` é aonde a entrada é verificada sintaticamente.
+
+
+Os programas principais são ``test-tokenize.c`` e ``test-parser.c``
+que usam as funções e estruturas dos módulos citados acima.
+
+O diretório ``tests/`` tem vários pequenos programas que foram usados
+para teste do analisador.
+
+=========================================
+
+
+++ Gramática do tokenizador ++
+
+Esta é a gramática utilizada para a máquina de estados do tokenizador:
+
+[model1.eps]
+
+
+========================================
+
+++ Análise do primeiro símbolo e fatorações ++
+
+Abaixo seguem as gramáticas utilizadas como referência, já modificadas com
+as fatorações que foram aplicadas à original. No código os nomes aparecem
+em inglês, mas devem refletir a mesma gramática.
+
+As análises de primeiro símbolo ficam após cada gramática.
+
+
+++ Sumário das alterações ++
+
++ Fator foi separado em Fator' para tirar a ambigüidade entre Identificador e
+ChamadaFuncao.
+
++ Comando foi separado em ChamadaProcedimentoOuAtribuição, para resolver a
+ambigüidade entre uma chamada de procedimento e uma atribuíção. Aliás, essa
+ambigüidade provavelmente vai dar alguma dor de cabeça para o gerador da
+árvore sintática no semestre que vem, pois algumas informações a mais terão
+que ser passadas para para os não-terminais seguintes, como o identificador
+em si que está sendo tratado.
+
+
+++ Primeira parte ++
+
+```
+Programa -> program Identificador ; Bloco .
+Bloco -> [ DeclVars ] ComandoComposto
+DeclVars -> var ListaVariaveis { ; ListaVariaveis } ;
+ListaVariáveis -> Variável { , Variável } : Tipo
+Tipo -> Identificador
+ComComposto -> begin Comando { ; Comando } end
+Comando -> Atribuição | ComandoComposto
+Atribuição -> Variável := Expressão
+Expressão -> ExpressãoSimples [ OpRelacao ExpressãoSimples ]
+OpRelacao -> = | < | <= | <> | > | >=
+ExpressãoSimples -> [+|-] Termo { (+ | - | or) Termo }
+Termo -> Fator { (* | div | and) Fator }
+Fator -> Variável | Numero | ( Expressão ) | not Fator
+Variável -> Identificador
+```
+
+
+| **Não terminal** | **Tokens** |
+| Programa | ``TOK_KW_PROGRAM`` |
+| Bloco    | ``TOK_KW_VAR`` ``TOK_KW_BEGIN`` |
+| DeclVars | ``TOK_KW_VAR`` |
+| ListaVariaveis | ``TOK_IDENTIFIER`` |
+| Tipo  | ``TOK_IDENTIFIER`` |
+| ComComposto | ``TOK_KW_BEGIN`` |
+| Comando  | ``TOK_IDENTIFIER`` ``TOK_KW_BEGIN`` |
+| Atribuição | ``TOK_IDENTIFIER`` |
+| Expressão | ``TOK_PLUS`` ``TOK_MINUS`` ``TOK_IDENTIFIER`` |
+|           |  ``TOK_INTEGER`` ``TOK_REAL`` ``TOK_LPARENTHESIS`` |
+|           | ``TOK_KW_NOT`` |
+| OpRelacao | ``TOK_EQUAL`` ``TOK_LESSTHAN`` ``TOK_LESSEQTHAN`` |
+|           | ``TOK_DIFFERENT``  ``TOK_GREATERTHAN`` |
+|           | ``TOK_GREATEREQTHAN`` |
+| ExpressãoSimples | ``TOK_PLUS`` ``TOK_MINUS`` ``TOK_IDENTIFIER`` |
+|                 | ``TOK_INTEGER`` ``TOK_REAL`` ``TOK_LPARENTHESIS`` |
+|                 | ``TOK_KW_NOT`` |
+| Termo  | ``TOK_IDENTIFIER`` ``TOK_INTEGER`` ``TOK_REAL``|
+|        | ``TOK_LPARENTHESIS`` ``TOK_KW_NOT`` |
+| Fator  | ``TOK_IDENTIFIER`` ``TOK_INTEGER`` ``TOK_REAL`` ``TOK_LPARENTHESIS``
+|        | ``TOK_KW_NOT`` |
+| Variável | ``TOK_IDENTIFIER`` |
+
+
+++ Segunda parte ++
+
+```
+Comando -> Atribuição | ComComposto | ComCondicional 
+          | ComRepetitivo | ComDesvio
+Bloco -> [ DeclLabels ] [ DeclConstantes ] [ DeclVars ] 
+         ComandoComposto
+Fator -> Variável | Constante | Numero | ( Expressão )
+         | not Fator | Caracter
+Variável -> Identificador | Identificador [ Numero ]
+
+DeclLabels -> label Numero { , Numero } ;
+DeclConstantes -> const DefinConstante { ; DefinConstante } ;
+DefinConstante -> Identificador = ( Numero | Caracter )
+Constante -> Identificador
+ComCondicional -> if Expressão then Comando [ else Comando ]
+ComRepetitivo -> while Expressão do Comando 
+                 | repeat Comando until Expressão
+ComDesvio -> goto Numero
+```
+
+| **Não terminal** | **Tokens** |
+| Comando | ``TOK_IDENTIFIER`` ``TOK_KW_BEGIN`` ``TOK_KW_IF`` |
+|         | ``TOK_KW_WHILE`` ``TOK_KW_REPEAT`` ``TOK_KW_GOTO`` |
+| Bloco | ``TOK_KW_LABEL`` ``TOK_KW_CONST`` ``TOK_KW_VAR`` |
+|       | ``TOK_KW_BEGIN`` |
+| Fator | ``TOK_IDENTIFIER`` ``TOK_OPENINGBRACKET`` ``TOK_INTEGER`` |
+|       | ``TOK_REAL`` ``TOK_LPARENTHESIS`` ``TOK_KW_NOT`` ``TOK_KW`` |
+| Variável | ``TOK_IDENTIFIER`` ``TOK_OPENINGBRACKET`` |
+| DeclLabels | ``TOK_KW_LABEL`` |
+| DeclConstantes | ``TOK_KW_CONST`` |
+| DefinConstante | ``TOK_IDENTIFIER`` |
+| Constante | ``TOK_IDENTIFIER`` |
+| ComCondicional | ``TOK_KW_IF`` |
+| ComRepetitivo   | ``TOK_KW_WHILE`` ``TOK_KW_REPEAT`` |
+| ComDesvio | ``TOK_KW_GOTO`` |
+
+++ Terceira parte ++
+
+```
+Comando -> Identificador ChamadaProcedimentoOuAtribuição | ComComposto
+           | ComCondicional | ComRepetitivo | ComDesvio
+ChamadaProcedimentoOuAtribuição ->  ( ListaExpressoes ) | epslon |
+            AtribuiçãoDepoisDeIndentificador
+AtribuiçãoDepoisDeIndentificador -> [ [ Inteiro ] ] := Expressão
+Bloco -> [ DeclLabels ] [ DeclConstantes ] [ DeclVars ] [ DeclSub ]
+         ComandoComposto
+Fator -> Numero | ( Expressão ) | not Fator | Caracter 
+         | Identificador Fator'
+Fator' -> epslon | ( ListaExpressoes )
+
+DeclSub -> { DeclProcedimento ; | DeclFunção ; }
+DeclProcedimento -> procedure Identificador
+                    [( Parâmetros { ; Parâmetros })] ; Bloco
+DeclFunção -> function Identificador
+                    [( Parâmetros { ; Parâmetros })] : Tipo ; Bloco
+Parâmetros -> [var] ListaVariaveis
+ChamadaProcedimento -> Identificador [ ( ListaExpressoes ) ]
+ChamadaFuncao -> Identificador [ ( ListaExpressoes ) ]
+ListaExpressoes -> Expressão { , Expressão }
+```
+
+| **Não terminal** | **Tokens** |
+| Comando  | ``TOK_IDENTIFIER``(Atribuição) |
+|          | ``TOK_IDENTIFIER`` (ChamadaProcedimento) |
+|          | ``TOK_KW_BEGIN`` ``TOK_KW_IF`` ``TOK_KW_WHILE`` |
+|          | ``TOK_KW_REPEAT``) ``TOK_KW_GOTO`` |
+| Bloco  | ``TOK_KW_LABEL`` ``TOK_KW_CONST`` ``TOK_KW_VAR`` |
+|        | ``TOK_KW_PROCEDURE``(DeclSub) |
+|        |  ``TOK_KW_FUNCTION``(DeclSub) |
+|        | ``TOK_KW_BEGIN`` |
+| Fator  | ``TOK_REAL`` ``TOK_IDENTIFIER`` ``TOK_LPARENTHESIS`` |
+|        | ``TOK_KW_NOT`` ``TOK_CHAR`` ``TOK_IDENTIFIER`` |
+| Fator'  | ``TOK_LPARENTHESIS`` |
+| DeclSub  | ``TOK_KW_PROCEDURE`` ``TOK_KW_FUNCTION`` |
+| DeclProcedimento | ``TOK_KW_PROCEDURE`` |
+| DeclFunção | ``TOK_KW_FUNCTION`` |
+| Parâmetros | ``TOK_KW_VAR`` ``TOK_IDENTIFIER`` |
+| ChamadaProcedimento | ``TOK_IDENTIFIER`` |
+| ListaExpressoes | ``TOK_PLUS`` ``TOK_MINUS`` ``TOK_IDENTIFIER`` |
+|                 | ``TOK_INTEGER`` ``TOK_REAL`` ``TOK_LPARENTHESIS`` |
+|                 | ``TOK_KW_NOT`` |
+| ChamadaProcedimentoOuAtribuição | ``TOK_LPARENTHESIS``
+|                                 | ``TOK_OPENINGBRACKET`` |
+|                                 | ``TOK_ASSIGNMENT`` |
+| AtribuiçãoDepoisDeIndentificador | ``TOK_OPENINGBRACKET`` |
+|                                  | ``TOK_ASSIGNMENT`` |
+
++ Compilando +
+
+Nos sistemas POSIX é suficiente digitar ``make`` e os binários serão
+gerados.
+
+No Windows existe é necessário ter o Dev-C++ instalado em
+``C:\Dev-cpp`` e para compilar é necessário executar o script
+``build.bat``.
+
+O código não foi testado com o compilador do Visual Studio.

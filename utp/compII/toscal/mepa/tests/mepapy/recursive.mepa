@@ -1,0 +1,35 @@
+; vim:ft=asm:ai:noet:ts=8
+;
+; problema: aparentemente o valor de k passado em chpr recursive_sum, 1 não
+; pode ser 1, deve ser outro valor (para que não haja overlap entre os sps
+; da vida)
+;
+inpp
+
+	dsvs inicio
+
+recursive_sum:
+	enpr 1
+	crvl 1, -4 ; carrega o parametro
+	armz 1, -5 ; poe no valor de retorno (caso termine o loop)
+	crvl 1, -4
+	cmdg 0     ; compara se e' diferente de zero
+	dsvf fin   ; se e' zero entao ir para o fim
+	amem 1     ; aloca espaco para o valor de retorno
+	crct 1
+	crvl 1, -4 ; carrega o parametro (para servir de parametro)
+	subt
+	chpr recursive_sum, 1 ; chama a si mesmo
+	crvl 1, -4
+	soma                  ; soma o valor de retorno com o parametro
+	armz 1, -5
+fin:
+	rtpr 1, 1
+
+
+inicio:
+	amem 1
+	crct 10
+	chpr recursive_sum, 0
+	impr
+para

@@ -1,0 +1,6 @@
+program Foo;1.
+var(**)a, b : int;
+	z, x : char;
+begin
+	z:=a>=(b>=c);
+end.

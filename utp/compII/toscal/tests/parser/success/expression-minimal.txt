@@ -1,0 +1,6 @@
+program Foo;
+var
+	x, y, z, k : tipo;
+begin
+	x := a
+end.

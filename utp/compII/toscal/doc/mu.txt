@@ -1,0 +1,81 @@
+Manual do usuário
+=================
+
+1. Como utilizar o tokenizador
+-------------------------------
+
+O tokenizador tenta avaliar os arquivos que são passados como argumentos
+pela linha de comando. A saída é escrita na saída padrão (stdout).
+
+Um exemplo de uso seria:
+
+  $ tokenize arquivo.pas
+
+E a saída com os tokens seria escrito na saída padrão.
+
+Para escrever a saída do programa em algum arquivo, use o recurso de
+redirecionamento do seu shell:
+
+  $ tokenize arquivo.pas > saida.txt
+
+O formato de saída do tokenizador é uma linha para cada token, tendo o nome
+do token (como utilizado dentro do código do analisador), seguido de dois
+pontos e um espaço, e uma seqüência de caracteres representando o lexema
+lido (mas não necessariamente o mesmo lexema da entrada, veja o exemplo).
+Por exemplo, para a entrada
+
+  a := 2.5
+
+a saída seria:
+
+  TOK_IDENTIFIER: a
+  TOK_ASSIGNMENT: :=
+  TOK_REAL: 2.500000
+
+
+2. Como utilizar o analisador sintático
+------------------------------------
+
+O analizador sintático usa o estilo UNIX(tm) de programas de linha de
+comando: a entrada vem da entrada padrão e a saída vai para a saída padrão,
+só.
+
+Então, para verificar uma entrada:
+
+  $ toscal < entrada.pas
+
+Caso a saída esteja correta, o programa vai ter código de saída zero e
+imprimir "Ok!" apenas.
+
+Para ver os tokens que estão sendo gerados pelo tokenizador, passe a opçao
+"-t" na linha de comando:
+
+  $ toscal -t < entrada.pas
+  TOK_KW_PROGRAM: program
+  TOK_IDENTIFIER: Programa
+  TOK_SEMICOLON: ;
+  TOK_KW_BEGIN: begin
+  TOK_IDENTIFIER: a
+  TOK_ASSIGNMENT: :=
+  TOK_INTEGER: 10
+  TOK_KW_END: end
+  TOK_DOT: .
+  TOK_EOF: .
+
+Para ver detalhes de como foi feita a análise dos tokens internamente, use
+a opção "-d" na linha de comando. Exemplo:
+
+  $ toscal -d < entrada.pas
+  fetched TOK_KW_PROGRAM at parser_check
+  on state: state_S
+  ensured TOK_KW_PROGRAM at state_S
+  fetched TOK_IDENTIFIER at state_S
+  ensured TOK_IDENTIFIER at state_S
+  fetched TOK_SEMICOLON at state_S
+  ensured TOK_SEMICOLON at state_S
+  fetched TOK_KW_BEGIN at state_S
+
+3. Fim
+------
+
+Qualquer dúvida, pode ler o código :-)

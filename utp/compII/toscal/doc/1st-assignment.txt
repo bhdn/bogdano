@@ -1,0 +1,55 @@
+Documento em http://gerds.utp.br/diogenes/co2/20082-CO2-Trab1.pdf
+
+Compiladores
+
+Compilador 3 Fase – Tabela de Símbolos
+
+AS EQUIPES
+
+O trabalho deve manter as mesmas equipes da 2 fase.
+
+ENUNCIADO
+
+Deverá ser criada uma tabela de símbolos (TS) para conter todos os
+identificadores (de variáveis, de funções, ...) que forem utilizados no
+programa.  Deverão ser escritas funções para inserir, remover e consultar
+os elementos da TS.
+
+Deverá ser construída toda a validação dos tipos dentro da gramática.
+
+GRAMÁTICA
+
+* Ver no PDF original -- bogdano
+
+A ENTREGA / APRESENTAÇÃO
+
+A data da entrega e da apresentação é final do 2º bimestre.  Tudo deverá
+ser entregue no item upload do site do professor no GERDS.
+
+Os seguintes itens devem constar num manual do programador:
+
+A) a declaração da estrutura TS, com a explicação da função de cada campo
+   criado (nomeId, tipoId, lexema, ...).
+B) uma gramática de atributos mostrando onde cada função da TS é chamada.
+C) uma lista das mensagens de erro identificadas com a analise semântica.
+D) a implementação do código, no qual as regras semânticas devem estar
+   COMENTADAS.
+
+A AVALIAÇÃO
+
+Fica estabelecida a seguinte porcentagem para cada grupo de regras que for
+implementado:
+
+• 40% para o grupo 1
+• 80% para o grupo 1 e 2
+• 100% para o grupo 1, 2 e 3
+
+Carece de decréscimo de nota os trabalhos que:
+
+• não apresentarem uma legibilidade razoável (endentação, ...);
+• trabalhos sem a utilização correta de constantes (#define);
+• sem alguns dos itens mencionados na “entrega”.
+
+Ficam sem nota, trabalhos que:
+
+• não forem apresentados ao professor.

@@ -1,0 +1,12 @@
+reading from stdin
+error: line 0 position 13: unexpected token TOK_DOT, expected TOK_KW_BEGIN
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_DOT at state_S
+on state: state_Block
+on state: state_CommandBlock

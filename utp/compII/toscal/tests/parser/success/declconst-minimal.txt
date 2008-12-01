@@ -1,0 +1,6 @@
+program Foo;
+const
+	CONSTANTE = '?';
+begin
+	x := CONSTANTE
+end.

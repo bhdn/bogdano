@@ -1,0 +1,2 @@
+reading from stdin
+error: line 10 position 15: semantic error: invalid type conversion between integer and <void>

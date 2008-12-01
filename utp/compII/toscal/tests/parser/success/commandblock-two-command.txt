@@ -1,0 +1,5 @@
+program Foo;
+begin
+	x := 1;
+	z := 2
+end.

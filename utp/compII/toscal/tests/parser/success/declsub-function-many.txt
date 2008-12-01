@@ -1,0 +1,16 @@
+program Foo;
+
+function sum(var a, b : int) : int;
+begin
+	sum := a + b
+end;
+
+function bla(a, b : int; g : string) : string;
+begin
+	do_something_else
+end;
+
+
+begin
+	a := 20
+end.

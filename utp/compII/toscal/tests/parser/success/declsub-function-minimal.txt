@@ -1,0 +1,11 @@
+program Foo;
+
+function sum(var a, b : int) : int;
+begin
+	sum := a + b
+end;
+
+
+begin
+	a := 20
+end.

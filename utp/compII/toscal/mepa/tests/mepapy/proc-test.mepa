@@ -1,0 +1,21 @@
+; vim:ft=asm
+inpp
+
+    dsvs inicio
+
+soma_dois_valores:
+    enpr 1
+    crvl 1, -5 ; carrega os parametros
+    crvl 1, -4
+    soma
+    armz 1, -6 ; poe o valor de returno da funcao
+    rtpr 1, 2
+
+inicio:
+    amem 1
+    crct 1000
+    crct 666
+    chpr soma_dois_valores, 0
+    impr
+
+para

@@ -1,0 +1,8 @@
+program Foo;
+const
+	CONSTANTE = '?';
+	OUTRA_CONSTANTE = 666.0;
+	MAIS_UMA = 0;
+begin
+	x := CONSTANTE
+end.

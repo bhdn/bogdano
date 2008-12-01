@@ -1,0 +1,4 @@
+program Foo;
+var
+begin
+end.

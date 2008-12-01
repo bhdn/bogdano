@@ -1,0 +1,6 @@
+reading from stdin
+error: line 3 position 1: unexpected token TOK_EOF, expected TOK_IDENTIFIER
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_EOF at state_S

@@ -1,0 +1,5 @@
+reading from stdin
+warning: using variable not initialized: a on complain_on_undeclared_variable_simple
+warning: using variable not initialized: c on complain_on_undeclared_variable_simple
+warning: using variable not initialized: c on complain_on_undeclared_variable_simple
+error: line 6 position 11: semantic error: referenced an undefined symbol: d

@@ -1,0 +1,27 @@
+reading from stdin
+INPP
+DSVS _start
+		; allocated label 0
+		; allocated label 1
+_start:
+AMEM 1		; local var
+CRCT 10
+ARMZ 0, 0	; local var
+CRVL 0, 0	; local var
+CRCT 10
+CMIG
+DSVF R2
+DSVS U0
+DSVS R3
+R2:
+DSVS U1
+R3:
+U1:
+ENRT 0, 1
+CRCT 1
+IMPR
+U0:
+ENRT 0, 1
+CRCT 2
+IMPR
+PARA

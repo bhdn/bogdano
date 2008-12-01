@@ -1,0 +1,16 @@
+reading from stdin
+INPP
+DSVS _start
+_start:
+AMEM 1		; local var
+AMEM 1		; local var
+AMEM 1		; local var
+CRCT 97
+ARMZ 0, 0	; local var
+CRCT 10
+CRCT 6
+SOMA
+ARMZ 0, 1	; local var
+CRCT 666
+ARMZ 0, 2	; local var
+PARA

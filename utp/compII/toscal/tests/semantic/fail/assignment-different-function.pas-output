@@ -1,0 +1,2 @@
+reading from stdin
+error: line 10 position 22: semantic error: cannot assign value to function: sum_two_values

@@ -1,0 +1,6 @@
+program test_program_args(input, output);
+var x, y : integer;
+begin
+	x := 999;
+	y := 666;
+end.

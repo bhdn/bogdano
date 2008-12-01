@@ -1,0 +1,11 @@
+error: on line 3 position 5: error parsing token
+TOK_IDENTIFIER: i0
+TOK_EQUAL: =
+TOK_MINUS: -
+TOK_REAL: 10.000000
+TOK_IDENTIFIER: i2
+TOK_EQUAL: =
+TOK_DOT: .
+TOK_INTEGER: 1
+TOK_IDENTIFIER: i1
+TOK_EQUAL: =

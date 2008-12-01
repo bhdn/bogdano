@@ -1,0 +1,16 @@
+program Foo;
+begin
+	a := 1;
+	if a = 10 then
+	begin
+		x := 10;
+		t := 10 + 20.1;
+		l := kk
+	end
+	else
+	begin
+		y := 20;
+		k := 20 + 30;
+		g := 10
+	end
+end.

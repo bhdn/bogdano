@@ -1,0 +1,14 @@
+Manual para o analisador léxico de Pascal Reduzido
+Bogdano Arendartchuk e Caio Ferreira
+%%date(%d/%m/%Y)
+
+= Introdução =
+
+Este manual descreve o uso e os detalhes do analisador léxico de uma
+linguagem.
+
+= Modelo da análise de tokens =
+
+      [model1.eps]            
+
+

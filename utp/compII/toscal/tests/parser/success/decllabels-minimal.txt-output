@@ -1,0 +1,37 @@
+reading from stdin
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_LABEL at state_S
+on state: state_Block
+on state: state_DeclLabels
+ensured TOK_KW_LABEL at state_DeclLabels
+fetched TOK_INTEGER at state_DeclLabels
+ensured TOK_INTEGER at state_DeclLabels
+fetched TOK_SEMICOLON at state_DeclLabels
+ensured TOK_SEMICOLON at state_DeclLabels
+fetched TOK_KW_BEGIN at state_DeclLabels
+leaving state_DeclLabels
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_KW_GOTO at state_CommandBlock
+on state: state_Command
+on state: state_BranchingCommand
+ensured TOK_KW_GOTO at state_BranchingCommand
+fetched TOK_INTEGER at state_BranchingCommand
+ensured TOK_INTEGER at state_BranchingCommand
+fetched TOK_KW_END at state_BranchingCommand
+leaving state_BranchingCommand
+leaving state_Command
+ensured TOK_KW_END at state_CommandBlock
+fetched TOK_DOT at state_CommandBlock
+leaving state_CommandBlock
+leaving state_Block
+ensured TOK_DOT at state_S
+fetched TOK_EOF at state_S
+leaving state_S
+ensured TOK_EOF at parser_check

@@ -1,0 +1,2 @@
+reading from stdin
+error: line 10 position 10: semantic error: symbol already defined: p

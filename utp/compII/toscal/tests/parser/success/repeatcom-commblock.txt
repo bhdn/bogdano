@@ -1,0 +1,9 @@
+program Foo;
+begin
+	while a < 10 do
+	begin
+		k := 666.0;
+		a := a + 1;
+		z := a * 10
+	end
+end.

@@ -1,0 +1,7 @@
+program Foo;
+var a : ztringh;
+    y : int;
+begin
+	y := 1;
+	x := a[y]
+end.

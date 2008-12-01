@@ -1,0 +1,2 @@
+reading from stdin
+error: line 16 position 10: semantic error: invalid type char as an conditional expression

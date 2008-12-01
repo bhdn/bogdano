@@ -1,0 +1,5 @@
+program Foo;
+begin
+	faz_algo(10, z);
+	faz_algo(a, b, c)
+end.

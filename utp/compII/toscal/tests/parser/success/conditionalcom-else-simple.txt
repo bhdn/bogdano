@@ -1,0 +1,8 @@
+program Foo;
+begin
+	a := 1;
+	if a = 10 then
+		x := 10
+	else
+		y := 20
+end.

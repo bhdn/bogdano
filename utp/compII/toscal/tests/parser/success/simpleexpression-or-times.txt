@@ -1,0 +1,5 @@
+program Foo;
+begin
+	x := +1;
+	y := a * b * d or k * k
+end.

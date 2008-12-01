@@ -1,0 +1,18 @@
+Notas do analisador léxico e sintático
+======================================
+
+Caracteríscas do analisador que divergem com Pascal:
+
+- Strings podem ocupar mais do que uma linha, algo como:
+
+x := 'blalbla
+blabla
+blabal'
+
+- Strings e identificadores não podem ocupar mais do que 255 bytes
+  (puramente arbitrário, talvez será arrumado mais tarde).
+
+- Há distinção entre maiúsculas e minúsiculas.
+
+- Comentários são feitos apenas com (* comentário *), podem ser multilinha
+  e não não suportam nenhum tipo de escape (como \*).

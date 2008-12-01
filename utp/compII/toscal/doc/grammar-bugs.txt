@@ -1,0 +1,61 @@
+Bugs na gramática do trabalho de Compiladores I/II
+...
+...
+
+% vim:ft=txt2tags:encoding=utf8
+
+= Introdução =
+
+Este incrível documento referencia os problemas que foram observados ao se
+implementar a gramática da linguagem proposta no trabalho das disciplinas
+de Compiladores I e II.
+
+= Os bugs =
+
+== O não terminal Variável não deve ser usado em declarações ==
+
+O não terminal Variável permite que a variável seja também uma "posição em
+um array", porém esse tipo de construção não é permitido pois
+//Variável// pode ser usado **ao se declarar uma variável**. Ou seja, a
+construção ``var foo[10], y[20] : integer`` é inválida porém permitida (em
+Pascal seria ``var foo : array[10] of integer``).
+
+Uma sugestão de correção seria ter não terminais que fosse relacionados
+apenas a ``DeclVars``, algo como ``DeclListaVariáveis`` e ``DeclVariável``.
+
+== Não é possível terminar um CommandBlock com ponto-e-vírgula ==
+
+Exemplo:
+
+```
+begin
+   foo;
+   bar;
+end.
+```
+
+O ``;`` encontrado após ``bar`` é considerado inválido. ``CommandBlock``
+deve saber tratar esse tipo de uso, pois é muito comum.
+
+== Programa não aceita parâmetro de programa, mas os testes tẽm ==
+
+Todos os arquivos de teste que foram deixados no site do gerds usam o
+recurso de parâmetros de programa (``program bla(input, output)``), mas
+este recurso não está descrito na gramática da linguagem.
+
+== O operador "mod" não está na especificação, mas os testes usam ==
+
+``mod`` não aparece nas gramáticas, porém o programa de teste ``p2.txt``
+usa esse operador.
+
+Esse problema foi contornado no parser, porém a máquina MEPA não tem uma
+instrução para esse tipo de operação. Em nossa implementação do simulador
+da máquina foi adicionada uma instrução ``MODU`` para tal.
+
+== Parâmetros de programa não especificado, mas aparece nos testes ==
+
+Parâmetros como em ``program bla(input, output)`` aparecem no exemplo
+``p3.txt``, porém essa sintaxe não é definida na gramática.
+
+Essa sintaxe foi adicionada ao programa, mas não tem função semântica
+alguma (tal como no exemplo em si).

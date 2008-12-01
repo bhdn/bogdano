@@ -1,0 +1,67 @@
+# Project: compilador
+# Makefile created by Dev-C++ 4.9.9.2
+#
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = test-tokenize.o tokenize.o input.o parser.o $(RES)
+LINKOBJ  =  input.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib"  
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = tokenize.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before toscal.exe tokenize.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN) toscal.exe
+
+$(BIN): input.o tokenize.o test-tokenize.o
+	$(CC) $^ -o "tokenize.exe" $(LIBS)
+
+toscal.exe: tokenize.o input.o parser.o symbols.o type.o hash.o string_list.o toscal.o semantic.o parameters.o codegen.o
+	$(CC) $^ -o "toscal.exe" $(LIBS)
+
+test-tokenize.o: test-tokenize.c
+	$(CC) -c test-tokenize.c -o test-tokenize.o $(CFLAGS)
+
+toscal.o: toscal.c
+	$(CC) -c toscal.c -o toscal.o $(CFLAGS)
+
+tokenize.o: tokenize.c
+	$(CC) -c tokenize.c -o tokenize.o $(CFLAGS)
+
+input.o: input.c
+	$(CC) -c input.c -o input.o $(CFLAGS)
+
+parser.o: parser.c
+	$(CC) -c parser.c -o parser.o $(CFLAGS)
+
+symbols.o: symbols.c
+	$(CC) -c symbols.c -o symbols.o $(CFLAGS)
+
+hash.o: hash.c
+	$(CC) -c hash.c -o hash.o $(CFLAGS)
+
+type.o: type.c
+	$(CC) -c type.c -o type.o $(CFLAGS)
+
+string_list.o: string_list.c
+	$(CC) -c string_list.c -o string_list.o $(CFLAGS)
+
+semantic.o: semantic.c
+	$(CC) -c semantic.c -o semantic.o $(CFLAGS)
+
+parameters.o: parameters.c
+	$(CC) -c parameters.c -o parameters.o $(CFLAGS)
+
+codegen.o: codegen.c
+	$(CC) -c codegen.c -o codegen.o $(CFLAGS)

@@ -1,0 +1,2 @@
+reading from stdin
+error: line 12 position 10: semantic error: cannot assign value to function: f

@@ -1,0 +1,115 @@
+reading from stdin
+fetched TOK_KW_PROGRAM at parser_check
+on state: state_S
+ensured TOK_KW_PROGRAM at state_S
+fetched TOK_IDENTIFIER at state_S
+ensured TOK_IDENTIFIER at state_S
+fetched TOK_SEMICOLON at state_S
+ensured TOK_SEMICOLON at state_S
+fetched TOK_KW_FUNCTION at state_S
+on state: state_Block
+on state: state_DeclSub
+on state: state_DeclFunction
+ensured TOK_KW_FUNCTION at state_DeclFunction
+fetched TOK_IDENTIFIER at state_DeclFunction
+ensured TOK_IDENTIFIER at state_DeclFunction
+fetched TOK_LPARENTHESIS at state_DeclFunction
+ensured TOK_LPARENTHESIS at state_DeclFunction
+fetched TOK_KW_VAR at state_DeclFunction
+on state: state_Parameters
+ensured TOK_KW_VAR at state_Parameters
+fetched TOK_IDENTIFIER at state_Parameters
+on state: state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COMMA at state_VariablesList
+ensured TOK_COMMA at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+ensured TOK_IDENTIFIER at state_VariablesList
+fetched TOK_COLON at state_VariablesList
+ensured TOK_COLON at state_VariablesList
+fetched TOK_IDENTIFIER at state_VariablesList
+on state: state_Type
+ensured TOK_IDENTIFIER at state_Type
+fetched TOK_RPARENTHESIS at state_Type
+leaving state_Type
+leaving state_VariablesList
+leaving state_Parameters
+ensured TOK_RPARENTHESIS at state_DeclFunction
+fetched TOK_COLON at state_DeclFunction
+ensured TOK_COLON at state_DeclFunction
+fetched TOK_IDENTIFIER at state_DeclFunction
+on state: state_Type
+ensured TOK_IDENTIFIER at state_Type
+fetched TOK_SEMICOLON at state_Type
+leaving state_Type
+ensured TOK_SEMICOLON at state_DeclFunction
+fetched TOK_KW_BEGIN at state_DeclFunction
+on state: state_Block
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_IDENTIFIER at state_CommandBlock
+on state: state_Command
+on state: state_Command_ProcedureCallOrAssignment
+ensured TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+fetched TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+ensured TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+fetched TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+on state: state_FatorI
+ensured TOK_IDENTIFIER at state_FatorI
+fetched TOK_PLUS at state_FatorI
+leaving state_FatorI
+leaving state_Fator
+leaving state_Term
+fetched TOK_IDENTIFIER at state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+on state: state_FatorI
+ensured TOK_IDENTIFIER at state_FatorI
+fetched TOK_KW_END at state_FatorI
+leaving state_FatorI
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+leaving state_Expression
+leaving state_Command_ProcedureCallOrAssignment
+leaving state_Command
+ensured TOK_KW_END at state_CommandBlock
+fetched TOK_SEMICOLON at state_CommandBlock
+leaving state_CommandBlock
+leaving state_Block
+leaving state_DeclFunction
+ensured TOK_SEMICOLON at state_DeclSub
+fetched TOK_KW_BEGIN at state_DeclSub
+leaving state_DeclSub
+on state: state_CommandBlock
+ensured TOK_KW_BEGIN at state_CommandBlock
+fetched TOK_IDENTIFIER at state_CommandBlock
+on state: state_Command
+on state: state_Command_ProcedureCallOrAssignment
+ensured TOK_IDENTIFIER at state_Command_ProcedureCallOrAssignment
+fetched TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+ensured TOK_ASSIGNMENT at state_Command_ProcedureCallOrAssignment
+fetched TOK_INTEGER at state_Command_ProcedureCallOrAssignment
+on state: state_Expression
+on state: state_SimpleExpression
+on state: state_Term
+on state: state_Fator
+fetched TOK_KW_END at state_Fator
+leaving state_Fator
+leaving state_Term
+leaving state_SimpleExpression
+leaving state_Expression
+leaving state_Command_ProcedureCallOrAssignment
+leaving state_Command
+ensured TOK_KW_END at state_CommandBlock
+fetched TOK_DOT at state_CommandBlock
+leaving state_CommandBlock
+leaving state_Block
+ensured TOK_DOT at state_S
+fetched TOK_EOF at state_S
+leaving state_S
+ensured TOK_EOF at parser_check

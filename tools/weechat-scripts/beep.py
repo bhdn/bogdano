@@ -10,7 +10,8 @@ def unload():
     return weechat.PLUGIN_RC_OK
 
 def add_message(server, args):
-    os.system("echo -en '\\a'")
+    if "PRIVMSG #" not in args:
+        os.system("echo -en '\\a'")
     return weechat.PLUGIN_RC_OK
 
 weechat.register("beep", "0.01", "unload", "Beep for weechat in Python")

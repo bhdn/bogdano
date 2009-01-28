@@ -1,6 +1,10 @@
 """
 beep.py - prints a beep (\\a) when receiving a privmsg or highlight
 
+To install this script you need the "weechat-python" package (or the
+equivalent for your distro) installed. Then copy this file to
+~/.weechat/python/autoload/
+
 Author: Bogdano Arendartchuk <bhdn@ukr.net>
 """
 import os

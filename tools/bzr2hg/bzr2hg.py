@@ -150,6 +150,15 @@ def hg_tag(hg_dir, tag, date=None):
     args.append(tag)
     cmd(args, workdir=hg_dir)
 
+def check_missing(hg_dir, files):
+    for file in files:
+        path = os.path.join(hg_dir, file)
+        if not os.path.exists(path):
+            # the file was not created by the patch, possibly because it
+            # should be empty
+            logger.debug("creating empty file: %s" % path)
+            open(path, "w").close()
+
 def hg_push_changeset(hg_dir, 
         (date, author, log, changes, added, removed, renamed, executables,
             newdirs),
@@ -162,6 +171,7 @@ def hg_push_changeset(hg_dir,
     if changes:
         apply_patch(hg_dir, changes)
     if added:
+        check_missing(hg_dir, added)
         hg_add(hg_dir, added)
     if removed and commit:
         hg_rm(hg_dir, removed)

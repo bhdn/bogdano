@@ -109,10 +109,14 @@ def svn_ensure_untouched(svn_dir):
                 "uncommited changes"
 
 def bzr_get_subrevs(source_br, rev):
-    subrevs = log.calculate_view_revisions(source_br, rev, rev, 'forward',
-            None, True, True)
-    revids = [revid for revid, subrev, depth in subrevs
-                    if depth == 1] # we don't want the merge itself
+    source_br.lock_read()
+    try:
+        subrevs = log.calculate_view_revisions(source_br, rev, rev, 'forward',
+                None, True, True)
+        revids = [revid for revid, subrev, depth in subrevs
+                        if depth == 1] # we don't want the merge itself
+    finally:
+        source_br.unlock()
     return revids
 
 def convert(source_bzr, dest_svn, subcommit=[], start_rev=None,

@@ -1,4 +1,6 @@
 #!/bin/awk -f
+#
+# 2009 Bogdano Arendartchuk <debogdano@gmail.com>
 # 
 # This script checks whether the generated kernel ABI for the built kernel
 # has changed since the last release.

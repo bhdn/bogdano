@@ -231,8 +231,8 @@ def parse_options(args):
             help="source bzr branch")
     parser.add_option("-d", "--dest", type="string",
             help="destination hg working copy")
-    parser.add_option("-r", "--start-rev", type="int", default=None,
-            help="start working from the given revision")
+    parser.add_option("-r", "--start-rev", type="int", default=1,
+            help="start working from the given revision (default: 1)")
     parser.add_option("-e", "--end-rev", type="int", default=None,
             help="stops working on the given revision")
     parser.add_option("-i", "--interesting", type="int", default=[],

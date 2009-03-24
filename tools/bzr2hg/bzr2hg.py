@@ -13,6 +13,7 @@ from bzrlib import branch, diff, log, revisionspec
 __author__ = "Bogdano Arendartchuk <debogdano@gmail.com>"
 __license__ = "GPL"
 
+locale.setlocale(locale.LC_ALL, None)
 encode_locale = locale.getpreferredencoding()
 
 logger = logging.getLogger("bzr2hg")

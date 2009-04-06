@@ -18,8 +18,7 @@ int compress(FILE *fin, FILE *fout)
 	wi = 0;
 	while((count = fread(buf, sizeof(buf[0]), BUFFER_SIZE, fin))) {
 		for (i = 0; i < count; i++) {
-			if (freq > 0 && (buf[i] != last ||
-			                 freq >= (unsigned char)-1)) {
+			if (freq > 0 && (buf[i] != last || freq >= 0xff)) {
 				
 				wbuf[wi++] = freq;
 				wbuf[wi++] = last;

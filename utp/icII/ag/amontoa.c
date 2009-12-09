@@ -91,7 +91,6 @@ struct arquivo **lista_arquivos(const char *basedir, size_t *narqs)
 	struct arquivo *atual, *ant;
 	struct arquivo *arquivos = NULL;
 	struct arquivo **arquivos_array;
-	char caminho[PATH_MAX];
 	size_t i;
 	
 	*narqs = 0;
@@ -127,6 +126,9 @@ struct arquivo **lista_arquivos(const char *basedir, size_t *narqs)
 
 	closedir(d);
 
+	/* aloca os arquivos em um array, pois eles serao referenciados
+	 * pelos seus indices nos cromossomos: */
+
 	arquivos_array = (struct arquivo**) ealloc(sizeof(struct arquivo*) * *narqs);
 	atual = arquivos;
 	
@@ -135,8 +137,6 @@ struct arquivo **lista_arquivos(const char *basedir, size_t *narqs)
 		arquivos_array[i++] = atual;
 		atual = atual->prox;
 	}
-
-	/* FIXME FIXME FIXME arquivos nao esta sendo liberado! */
 
 	return arquivos_array;
 }
@@ -288,8 +288,41 @@ void mutacao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	printf("]\n");
 }
 
+void cruza(struct cromossomo *joao, struct cromossomo *maria,
+		struct cromossomo *filho, struct contexto *ctx)
+{
+	size_t igene, igjoao, ate;
+	gene_t tmp, tmpjoao;
+
+	memcpy(maria->genes, joao->genes, sizeof(gene_t) * ctx->ngenes);
+	igene = rand() % (ctx->ngenes - ctx->recombinacao_area);
+	ate = igene + ctx->recombinacao_area;
+	for (; igene < ate; igene++) {	
+		tmp = maria->genes[igene];
+		for (igjoao = 0; igjoao < ctx->ngenes; igjoao++)
+			if (tmp == joao->genes[igjoao])
+				break;
+			/* sem condicao de erro, ele sempre deve achar */
+		filho->genes[igene] = tmp;
+		filho->genes[igjoao] = joao->genes[igene];
+	}
+}
+
 void crossover(struct cromossomo **populacao, size_t individuos, struct contexto *ctx)
 {
+	size_t i, igene, inicio;
+	struct cromossomo **antiga;
+
+	antiga = (struct cromossomo**) ealloc(sizeof(struct cromossomo*) * individuos);
+	memcpy(antiga, populacao, sizeof(struct cromossomo*) * individuos);
+
+	const size_t iteracoes = individuos - 1;
+	for (i = 0; i < iteracoes; i += 2) {
+		cruza(antiga[i], antiga[i+1], populacao[i], ctx);
+		cruza(antiga[i+1], antiga[i], populacao[i+1], ctx);
+	}
+
+	free(antiga);
 }
 
 void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *ctx)
@@ -299,7 +332,6 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	float maior = 0;
 	float menor = -1;
 	float fittotal = 0.0;
-	float prob;
 	int total = 0;
 	int *quantos;
 	int *roleta;
@@ -362,9 +394,9 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 }
 
 
-int pensa(struct contexto *ctx)
+void pensa(struct contexto *ctx)
 {
-	size_t i, j;
+	size_t i;
 
 	struct cromossomo **popatual =
 		cria_populacao(ctx->tamanho_populacao, ctx->narquivos);
@@ -380,7 +412,7 @@ int pensa(struct contexto *ctx)
 		selecao(popatual, ctx->tamanho_populacao, ctx);
 		mutacao(popatual, ctx->tamanho_populacao, ctx);
 		fitness_populacao(popatual, ctx->tamanho_populacao, ctx);
-		//crossover(popatul, ctx->tamanho_populacao, ctx);
+		crossover(popatual, ctx->tamanho_populacao, ctx);
 	}
 }
 
@@ -405,7 +437,21 @@ void ajuda()
 
 void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 {
-	size_t i;
+	size_t i, iopt;
+	struct {
+		char opt;
+		int *dest;
+	} opts[] = {
+		{'p', &ctx->tamanho_populacao},
+		{'E', &ctx->p_espaco},
+		{'m', &ctx->p_mutacao},
+		{'M', &ctx->p_mutarao},
+		{'r', &ctx->p_recombinacao},
+		{'R', &ctx->recombinacao_area},
+		{'c', &ctx->corte_selecao},
+		{'g', &ctx->ngeracoes},
+		{'s', &ctx->tamanho_midia}
+	};
 
 	ctx->caminho = NULL;
 
@@ -419,40 +465,17 @@ void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 				fprintf(stderr, "eita, falta argumento para %s\n", argv[i]);
 				exit(1);
 			}
-			switch (argv[i][1]) {
-			case 'p':
-				ctx->tamanho_populacao = atoi(argv[++i]);
-				break;
-			case 'E':
-				ctx->p_espaco = atoi(argv[++i]);
-				break;
-			case 'm':
-				ctx->p_mutacao = atoi(argv[++i]);
-				break;
-			case 'M':
-				ctx->p_mutarao = atoi(argv[++i]);
-				break;
-			case 'r':
-				ctx->p_recombinacao = atoi(argv[++i]);
-				break;
-			case 'R':
-				ctx->recombinacao_area = atoi(argv[++i]);
-				break;
-			case 'c':
-				ctx->corte_selecao = atoi(argv[++i]);
-				break;
-			case 'g':
-				ctx->ngeracoes = atoi(argv[++i]);
-				break;
-			case 's':
-				ctx->tamanho_midia = atoi(argv[++i]);
-				break;
-			default:
+			const size_t optscount = sizeof(opts) / sizeof(opts[0]);
+			for (iopt = 0; iopt < optscount; iopt++)
+				if (argv[i][1] == opts[iopt].opt) {
+					*opts[iopt].dest = atoi(argv[++i]);
+					break;
+				}
+			if (iopt == optscount) {
 				fprintf(stderr, "opcao invalida: %s\n", argv[i]);
 				exit(1);
 			}
 		}
-
 	}
 
 	if (!ctx->caminho)
@@ -461,7 +484,6 @@ void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 
 int main(int argc, char *argv[])
 {
-	const size_t maximo_geracoes = 100;
 	struct contexto ctx;
 	size_t i;
 	int ret = 0;
@@ -502,7 +524,7 @@ int main(int argc, char *argv[])
 		printf("nao ha o que ser feito\n");
 	}
 	else
-		ret = pensa(&ctx);
+		pensa(&ctx);
 
 	return ret;
 }

@@ -450,7 +450,7 @@ void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 		{'R', &ctx->recombinacao_area},
 		{'c', &ctx->corte_selecao},
 		{'g', &ctx->ngeracoes},
-		{'s', &ctx->tamanho_midia}
+		{'s', (int*)&ctx->tamanho_midia}
 	};
 
 	ctx->caminho = NULL;

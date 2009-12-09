@@ -221,7 +221,7 @@ float fitness(struct cromossomo *individuo, struct contexto *ctx)
 		usado += tamanho;
 	}
 	fitness = (float)nmidias - (float)ctx->ideal;
-	//printf("fit %x: %d - %d = %.2f\n", individuo, nmidias, ctx->ideal, fitness);
+	printf("fit %x: %d - %d = %.2f\n", individuo, nmidias, ctx->ideal, fitness);
 
 	return fitness;
 }

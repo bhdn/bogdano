@@ -41,6 +41,7 @@ struct contexto {
 	char *caminho;
 	struct arquivo **arquivos;
 	size_t narquivos;
+	int mostra_arquivos;
 
 	int p_espaco;  /* espaco usado para calculo das probabilidades de
 			  mudacao e recomb */
@@ -405,8 +406,17 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	free(antiga);
 }
 
+void mostra(struct cromossomo **populacao, struct contexto *ctx)
+{
+	size_t i, idx;
 
-void pensa(struct contexto *ctx)
+	for (i = 0; i < ctx->narquivos; i++) {
+		idx = populacao[0]->genes[i];
+		puts(ctx->arquivos[idx]->caminho);
+	}
+}
+
+struct cromossomo **pensa(struct contexto *ctx)
 {
 	size_t i;
 
@@ -426,6 +436,8 @@ void pensa(struct contexto *ctx)
 		fitness_populacao(popatual, ctx->tamanho_populacao, ctx);
 		crossover(popatual, ctx->tamanho_populacao, ctx);
 	}
+
+	return popatual;
 }
 
 void ajuda()
@@ -441,6 +453,7 @@ void ajuda()
 		"	-R AREA num. de genes contiguos herdados\n"
 		"	-c CORTE quantos serao cortados na selecao\n"
 		"	-g GERACOES num. de geracoes para execucao\n"
+		"	-d 0/1 1 para mostrar arquivos no final da exec.\n"
 		"	-s TAMANHO da midia, em bytes\n"
 		"	-h AAJUUUUDA!\n"
 		"\n");
@@ -462,6 +475,7 @@ void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 		{'R', &ctx->recombinacao_area},
 		{'c', &ctx->corte_selecao},
 		{'g', &ctx->ngeracoes},
+		{'d', &ctx->mostra_arquivos},
 		{'s', (int*)&ctx->tamanho_midia}
 	};
 
@@ -500,6 +514,7 @@ int main(int argc, char *argv[])
 	size_t i;
 	int ret = 0;
 
+	ctx.mostra_arquivos = 0;
 	ctx.tamanho_midia = 700 * 1024;
 	ctx.tamanho_total = 0;
 	ctx.tamanho_populacao = 10;
@@ -537,8 +552,12 @@ int main(int argc, char *argv[])
 		printf("os arquivos ocupam menos espaco que o tamanho da midia\n");
 		printf("nao ha o que ser feito\n");
 	}
-	else
-		pensa(&ctx);
+	else {
+		struct cromossomo **pop;
+		pop = pensa(&ctx);
+		if (ctx.mostra_arquivos)
+			mostra(pop, &ctx);
+	}
 
 	return ret;
 }

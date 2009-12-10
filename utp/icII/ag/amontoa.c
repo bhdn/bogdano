@@ -294,7 +294,7 @@ void cruza(struct cromossomo *joao, struct cromossomo *maria,
 		struct cromossomo *filho, struct contexto *ctx)
 {
 	size_t igene, igjoao, ate;
-	gene_t tmp, tmpjoao;
+	gene_t tmp;
 
 	memcpy(maria->genes, joao->genes, sizeof(gene_t) * ctx->ngenes);
 	igene = random() % (ctx->ngenes - ctx->recombinacao_area);
@@ -312,7 +312,7 @@ void cruza(struct cromossomo *joao, struct cromossomo *maria,
 
 void crossover(struct cromossomo **populacao, size_t individuos, struct contexto *ctx)
 {
-	size_t i, igene, inicio;
+	size_t i;
 	struct cromossomo **antiga;
 
 	antiga = (struct cromossomo**) ealloc(sizeof(struct cromossomo*) * individuos);
@@ -337,8 +337,9 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	int total = 0;
 	int *quantos;
 	int *roleta;
-	struct cromossomo **antiga;
-
+	struct cromossomo **antiga; /* FIXME esses arrays podem ser
+				       alocados no inicio do programa, pois
+				       nunca mudam de tamanho */
 	/* coleta maior e menor fitness */
 	for (i = 0; i < individuos; i++) {
 		if (populacao[i]->fitness > maior)

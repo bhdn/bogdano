@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <time.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,7 @@
 
 #ifdef WIN32
 #define PATH_MAX BUFSIZ
+#define random rand
 #warning use um sistema operacional que presta
 #endif
 
@@ -163,7 +165,7 @@ void shuffle(gene_t *genes, size_t ngenes, int voltas)
 	for (volta = 0; volta < voltas; volta++) {
 		for (i = 0; i < ngenes; i++) {
 			de = i;
-			para = rand() % ngenes;
+			para = random() % ngenes;
 
 			tmp = genes[de];
 			genes[de] = genes[para];
@@ -221,7 +223,7 @@ float fitness(struct cromossomo *individuo, struct contexto *ctx)
 		usado += tamanho;
 	}
 	fitness = (float)nmidias - (float)ctx->ideal;
-	printf("fit %x: %d - %d = %.2f\n", individuo, nmidias, ctx->ideal, fitness);
+	//printf("fit %x: %d - %d = %.2f\n", individuo, nmidias, ctx->ideal, fitness);
 
 	return fitness;
 }
@@ -271,14 +273,14 @@ void mutacao(struct cromossomo **populacao, size_t individuos, struct contexto *
 
 	printf("mutacoes (%d genes): [", mutarao);
 	for (i = 0; i < individuos; i++) {
-		if (rand() % ctx->p_espaco <= ctx->p_mutacao) {
+		if (random() % ctx->p_espaco <= ctx->p_mutacao) {
 			/* ok, deu sorte, mutara */
 			printf("%d ", i);
 			/* shuffle nao pode ser usado aqui, por iterar em ordem
 			 * definida */
 			for (imut = 0; imut < mutarao; imut++) {
-				igene1 = rand() % ctx->ngenes;
-				igene2 = rand() % ctx->ngenes;
+				igene1 = random() % ctx->ngenes;
+				igene2 = random() % ctx->ngenes;
 				tmp = populacao[i]->genes[igene1];
 				populacao[i]->genes[igene1] = populacao[i]->genes[igene2];
 				populacao[i]->genes[igene2] = tmp;
@@ -295,7 +297,7 @@ void cruza(struct cromossomo *joao, struct cromossomo *maria,
 	gene_t tmp, tmpjoao;
 
 	memcpy(maria->genes, joao->genes, sizeof(gene_t) * ctx->ngenes);
-	igene = rand() % (ctx->ngenes - ctx->recombinacao_area);
+	igene = random() % (ctx->ngenes - ctx->recombinacao_area);
 	ate = igene + ctx->recombinacao_area;
 	for (; igene < ate; igene++) {	
 		tmp = maria->genes[igene];
@@ -378,7 +380,7 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	/* realiza o grande sorteio */
 	printf("selecionados: [");
 	for (i = 0; i < individuos; i++) {
-		c = rand() % total;
+		c = random() % total;
 		selecionado = roleta[c];
 		printf("%d:%d ", i, selecionado);
 		/* copia genes e fitness de um para outro */
@@ -518,6 +520,8 @@ int main(int argc, char *argv[])
 	printf("quantos genes mutacao: %d\n", ctx.p_mutarao);
 	printf("p. de recomb: %d\n", ctx.p_recombinacao);
 	printf("numero de geracoes: %d\n", ctx.ngeracoes);
+
+	srandom((unsigned int)time(NULL));
 
 	if (ctx.tamanho_total < ctx.tamanho_midia) {
 		printf("os arquivos ocupam menos espaco que o tamanho da midia\n");

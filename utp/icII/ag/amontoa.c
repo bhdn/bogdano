@@ -233,7 +233,7 @@ int fitness_cmp(const void *um, const void *outro)
 	struct cromossomo *cum, *coutro;
 
 	/* terrivel */
-	cum = (struct cromossomo*) *(struct cromossomo**)um;
+	cum = um;
 	coutro = (struct cromossomo*) *(struct cromossomo**)outro;
 
 	if (cum->fitness > coutro->fitness)
@@ -296,6 +296,12 @@ void cruza(struct cromossomo *joao, struct cromossomo *maria,
 	size_t igene, igjoao, ate;
 	gene_t tmp;
 
+	/* esse cruzamento copia todos os genes de joao; escolhe alguma
+	 * regiao (de tamanho recombinacao_area) do cromossomo de maria e
+	 * copia os cromossomos de maria para o filho;
+	 *
+	 * o que complica essa copia eh que eh necessario reorganizar os
+	 * genes do filho, para que nao hajam repeticoes na disposicao. */
 	memcpy(maria->genes, joao->genes, sizeof(gene_t) * ctx->ngenes);
 	igene = random() % (ctx->ngenes - ctx->recombinacao_area);
 	ate = igene + ctx->recombinacao_area;
@@ -327,6 +333,13 @@ void crossover(struct cromossomo **populacao, size_t individuos, struct contexto
 	free(antiga);
 }
 
+/** selecao
+ *
+ * Faz a selecao dos individuos "mais aptos". Utiliza o "metodo da roleta",
+ * que eh amplamente descrito na literatura. Blah.
+ *
+ * Utiliza corte_selecao, para elimitar os N menos aptos da populacao.
+ */
 void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *ctx)
 {
 	size_t i, j, c, selecionado;

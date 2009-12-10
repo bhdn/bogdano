@@ -230,15 +230,11 @@ float fitness(struct cromossomo *individuo, struct contexto *ctx)
 
 int fitness_cmp(const void *um, const void *outro)
 {
-	struct cromossomo *cum, *coutro;
+#define DEREFCR(ptr) (*(struct cromossomo**)ptr)
 
-	/* terrivel */
-	cum = um;
-	coutro = (struct cromossomo*) *(struct cromossomo**)outro;
-
-	if (cum->fitness > coutro->fitness)
+	if (DEREFCR(um)->fitness > DEREFCR(outro)->fitness)
 		return 1;
-	else if (cum->fitness == coutro->fitness)
+	else if (DEREFCR(um)->fitness == DEREFCR(outro)->fitness)
 		return 0;
 	else
 		return -1;

@@ -7,12 +7,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #ifdef WIN32
 #define PATH_MAX BUFSIZ
 #define random rand
 #warning use um sistema operacional que presta
 #endif
+
+static int verbosidade = 0;
+
+void debugf(int nivel, const char *fmt, ...)
+{
+	va_list ap;
+
+	if (nivel <= verbosidade) {
+		va_start(ap, fmt);
+		vprintf(fmt, ap);
+	}
+}
 
 typedef unsigned int gene_t;
 
@@ -57,6 +70,8 @@ struct contexto {
 	int recombinacao_area;
 
 	int ngeracoes;
+
+	int verbosidade;
 };
 
 void *ealloc(size_t size)
@@ -190,10 +205,10 @@ void mostra_individuo(struct cromossomo *individuo, size_t ngenes)
 {
 	size_t i;
 
-	printf("(%05f)", individuo->fitness);
+	debugf(2, "(%05f)", individuo->fitness);
 	for (i = 0; i < ngenes; i++)
-		printf("%04d ", individuo->genes[i]);
-	printf("\n");
+		debugf(2, "%04d ", individuo->genes[i]);
+	debugf(2, "\n");
 }
 
 float fitness(struct cromossomo *individuo, struct contexto *ctx)
@@ -226,7 +241,7 @@ float fitness(struct cromossomo *individuo, struct contexto *ctx)
 		usado += tamanho;
 	}
 	fitness = (float)nmidias - (float)ctx->ideal;
-	//printf("fit %x: %d - %d = %.2f\n", individuo, nmidias, ctx->ideal, fitness);
+	//debugf(2, "fit %x: %d - %d = %.2f\n", individuo, nmidias, ctx->ideal, fitness);
 
 	return fitness;
 }
@@ -253,11 +268,11 @@ void fitness_populacao(struct cromossomo **populacao, size_t individuos, struct 
 
 	qsort(populacao, individuos, sizeof(struct cromossomo*), fitness_cmp);
 
-	printf("fitness [");
+	debugf(2, "fitness [");
 	for (i = 0; i < individuos; i++)
-		printf("%d:%.2f ", i, populacao[i]->fitness);
-	printf("]\n");
-	printf("fitness media: %.2f\n", total / individuos);
+		debugf(2, "%d:%.2f ", i, populacao[i]->fitness);
+	debugf(2, "]\n");
+	debugf(1, "fitness media: %.2f\n", total / individuos);
 }
 
 void mutacao(struct cromossomo **populacao, size_t individuos, struct contexto *ctx)
@@ -270,11 +285,11 @@ void mutacao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	if (mutarao == 0)
 		mutarao = 1;
 
-	printf("mutacoes (%d genes): [", mutarao);
+	debugf(2, "mutacoes (%d genes): [", mutarao);
 	for (i = 0; i < individuos; i++) {
 		if (random() % ctx->p_espaco <= ctx->p_mutacao) {
 			/* ok, deu sorte, mutara */
-			printf("%d ", i);
+			debugf(2, "%d ", i);
 			/* shuffle nao pode ser usado aqui, por iterar em ordem
 			 * definida */
 			for (imut = 0; imut < mutarao; imut++) {
@@ -286,7 +301,7 @@ void mutacao(struct cromossomo **populacao, size_t individuos, struct contexto *
 			}
 		}
 	}
-	printf("]\n");
+	debugf(2, "]\n");
 }
 
 void cruza(struct cromossomo *joao, struct cromossomo *maria,
@@ -373,12 +388,12 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 		ctx->corte_selecao = 0;
 	}
 	size_t sorteados = individuos - ctx->corte_selecao;
-	printf("roleta: [");
+	debugf(2, "roleta: [");
 	for (i = 0; i < sorteados; i++) {
 		total += quantos[i] = slots--;
-		printf("%d:%d ", i, quantos[i]);
+		debugf(2, "%d:%d ", i, quantos[i]);
 	}
-	printf("]\n");
+	debugf(2, "]\n");
 
 	/* prepara a tal roleta */
 	roleta = (int*) ealloc(sizeof(int) * total);
@@ -391,17 +406,17 @@ void selecao(struct cromossomo **populacao, size_t individuos, struct contexto *
 	memcpy(antiga, populacao, sizeof(struct cromossomo*) * individuos);
 
 	/* realiza o grande sorteio */
-	printf("selecionados: [");
+	debugf(2, "selecionados: [");
 	for (i = 0; i < individuos; i++) {
 		c = random() % total;
 		selecionado = roleta[c];
-		printf("%d:%d ", i, selecionado);
+		debugf(2, "%d:%d ", i, selecionado);
 		/* copia genes e fitness de um para outro */
 		for (igene = 0; igene < ctx->ngenes; igene++)
 			populacao[i]->genes[igene] = antiga[selecionado]->genes[igene];
 		populacao[i]->fitness = antiga[selecionado]->fitness;
 	}
-	printf("]\n");
+	debugf(2, "]\n");
 
 	free(quantos);
 	free(roleta);
@@ -430,7 +445,7 @@ struct cromossomo **pensa(struct contexto *ctx)
 	fitness_populacao(popatual, ctx->tamanho_populacao, ctx);
 
 	for (i = 0; i < ctx->ngeracoes; i++) {
-		printf("geracao: %d\n", i);
+		debugf(1, "geracao: %d\n", i);
 		//for (j = 0; j < ctx->tamanho_populacao; j++)
 		//	mostra_individuo(popatual[j], ctx->ngenes);
 		selecao(popatual, ctx->tamanho_populacao, ctx);
@@ -444,7 +459,7 @@ struct cromossomo **pensa(struct contexto *ctx)
 
 void ajuda()
 {
-	printf("programa [opcoes] <diretorio>\n"
+	debugf(2, "programa [opcoes] <diretorio>\n"
 		"Opcoes: \n"
 		"\n"
 		"	-p POPULACAO\n"
@@ -457,6 +472,7 @@ void ajuda()
 		"	-g GERACOES num. de geracoes para execucao\n"
 		"	-d 0/1 1 para mostrar arquivos no final da exec.\n"
 		"	-s TAMANHO da midia, em bytes\n"
+		"	-v NIVEL verbosidade 0=nada 1=medias 2=tudo\n"
 		"	-h AAJUUUUDA!\n"
 		"\n");
 	exit(0);
@@ -478,6 +494,7 @@ void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 		{'c', &ctx->corte_selecao},
 		{'g', &ctx->ngeracoes},
 		{'d', &ctx->mostra_arquivos},
+		{'v', &ctx->verbosidade},
 		{'s', (int*)&ctx->tamanho_midia}
 	};
 
@@ -516,6 +533,7 @@ int main(int argc, char *argv[])
 	size_t i;
 	int ret = 0;
 
+	ctx.verbosidade = 0;
 	ctx.mostra_arquivos = 0;
 	ctx.tamanho_midia = 700 * 1024;
 	ctx.tamanho_total = 0;
@@ -528,6 +546,7 @@ int main(int argc, char *argv[])
 	ctx.ngeracoes = 10000;
 	ctx.recombinacao_area = 10;
 	avalia_opcoes(argc, argv, &ctx);
+	verbosidade = ctx.verbosidade; /* blarg */
 	ctx.arquivos = lista_arquivos(ctx.caminho, &ctx.narquivos);
 	ctx.ngenes = ctx.narquivos;
 
@@ -536,23 +555,23 @@ int main(int argc, char *argv[])
 	ctx.ideal = ctx.tamanho_total / ctx.tamanho_midia; /* FIXME signedness */
 	if (ctx.ideal == 0)
 		ctx.ideal = 1;
-	printf("numero de arquivos: %u\n", ctx.narquivos);
-	printf("tamanho total: %u\n", ctx.tamanho_total);
-	printf("tamanho de midia: %u\n", ctx.tamanho_midia);
-	printf("numero ideal de midias: %d\n", ctx.ideal);
-	printf("espaco de p: %d\n", ctx.p_espaco);
-	printf("populacao: %d\n", ctx.tamanho_populacao);
-	printf("corte de selecao: %d\n", ctx.corte_selecao);
-	printf("p. de mutacao: %d\n", ctx.p_mutacao);
-	printf("quantos genes mutacao: %d\n", ctx.p_mutarao);
-	printf("p. de recomb: %d\n", ctx.p_recombinacao);
-	printf("numero de geracoes: %d\n", ctx.ngeracoes);
+	debugf(2, "numero de arquivos: %u\n", ctx.narquivos);
+	debugf(2, "tamanho total: %u\n", ctx.tamanho_total);
+	debugf(2, "tamanho de midia: %u\n", ctx.tamanho_midia);
+	debugf(2, "numero ideal de midias: %d\n", ctx.ideal);
+	debugf(2, "espaco de p: %d\n", ctx.p_espaco);
+	debugf(2, "populacao: %d\n", ctx.tamanho_populacao);
+	debugf(2, "corte de selecao: %d\n", ctx.corte_selecao);
+	debugf(2, "p. de mutacao: %d\n", ctx.p_mutacao);
+	debugf(2, "quantos genes mutacao: %d\n", ctx.p_mutarao);
+	debugf(2, "p. de recomb: %d\n", ctx.p_recombinacao);
+	debugf(2, "numero de geracoes: %d\n", ctx.ngeracoes);
 
 	srandom((unsigned int)time(NULL));
 
 	if (ctx.tamanho_total < ctx.tamanho_midia) {
-		printf("os arquivos ocupam menos espaco que o tamanho da midia\n");
-		printf("nao ha o que ser feito\n");
+		debugf(2, "os arquivos ocupam menos espaco que o tamanho da midia\n");
+		debugf(2, "nao ha o que ser feito\n");
 	}
 	else {
 		struct cromossomo **pop;

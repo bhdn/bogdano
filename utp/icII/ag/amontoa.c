@@ -29,6 +29,8 @@ struct arquivo {
 	struct arquivo *prox;
 };
 
+/* contexto -- estrutura tambem conhecida como "monte de variaveis que
+ * poderiam ser globais" */
 struct contexto {	
 	off_t tamanho_midia;
 	off_t tamanho_total;

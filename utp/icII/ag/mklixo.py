@@ -8,9 +8,9 @@ def create_stuff(nfiles):
     for nfile in xrange(nfiles):
         name = "file-%05d.METAL" % nfile
         f = open(name, "w")
-        for block in xrange(random.randint(1, 500)):
-            content = "M" * (1024)
-            f.write(content)
+        size = random.randint(1, 2000) * 1024
+        f.seek(size-1)
+        f.write("\0")
         f.close()
 
 if __name__ == "__main__":

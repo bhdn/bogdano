@@ -17,7 +17,7 @@
 
 static int verbosidade = 1;
 
-void debugf(int nivel, const char *fmt, ...)
+static void debugf(int nivel, const char *fmt, ...)
 {
 	va_list ap;
 
@@ -477,7 +477,7 @@ struct cromossomo **pensa(struct contexto *ctx)
 	return popatual;
 }
 
-void ajuda()
+static void ajuda()
 {
 	debugf(1, "programa [opcoes] <diretorio>\n"
 		"Opcoes: \n"
@@ -498,7 +498,7 @@ void ajuda()
 	exit(0);
 }
 
-void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
+static void avalia_opcoes(int argc, char *argv[], struct contexto *ctx)
 {
 	size_t i, iopt;
 	struct {

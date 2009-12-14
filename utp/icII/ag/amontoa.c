@@ -45,6 +45,8 @@ struct arquivo {
 /* contexto -- estrutura tambem conhecida como "monte de variaveis que
  * poderiam ser globais" */
 struct contexto {	
+	size_t geracao_atual;
+
 	off_t tamanho_midia;
 	off_t tamanho_total;
 	int ideal;
@@ -70,6 +72,7 @@ struct contexto {
 	int recombinacao_area;
 
 	int ngeracoes;
+	float *geracoes_medias; /* mantem dados de medias por geracao */
 
 	int verbosidade;
 };
@@ -121,7 +124,7 @@ struct arquivo **lista_arquivos(const char *basedir, size_t *narqs)
 		exit(1);
 	}
 
-	while (dir = readdir(d)) {
+	while ((dir = readdir(d))) {
 		atual = (struct arquivo*) ealloc(sizeof(struct arquivo));
 		atual->prox = NULL;
 
@@ -272,7 +275,8 @@ void fitness_populacao(struct cromossomo **populacao, size_t individuos, struct 
 	for (i = 0; i < individuos; i++)
 		debugf(2, "%d:%.2f ", i, populacao[i]->fitness);
 	debugf(2, "]\n");
-	debugf(1, "fitness media: %.2f\n", total / individuos);
+	ctx->geracoes_medias[ctx->geracao_atual] = total / individuos;
+	//debugf(1, "fitness media: %.2f\n", total / individuos);
 }
 
 void mutacao(struct cromossomo **populacao, size_t individuos, struct contexto *ctx)
@@ -433,6 +437,21 @@ void mostra(struct cromossomo **populacao, struct contexto *ctx)
 	}
 }
 
+void aloca_estatisticas(struct contexto *ctx)
+{
+	ctx->geracoes_medias = ealloc(sizeof(ctx->geracoes_medias[0]) * ctx->ngeracoes);
+}
+
+void mostra_medias(struct contexto *ctx)
+{
+	size_t i;
+
+	for (i = 0; i < ctx->ngeracoes; i++) {
+		debugf(1, "geracao: %u\n", i);
+		debugf(1, "fitness media: %.2f\n", ctx->geracoes_medias[i]);
+	}
+}
+
 struct cromossomo **pensa(struct contexto *ctx)
 {
 	size_t i;
@@ -444,8 +463,9 @@ struct cromossomo **pensa(struct contexto *ctx)
 		gera_individuo(popatual[i], ctx->ngenes);
 	fitness_populacao(popatual, ctx->tamanho_populacao, ctx);
 
-	for (i = 0; i < ctx->ngeracoes; i++) {
-		debugf(1, "geracao: %d\n", i);
+	for (ctx->geracao_atual = 0; ctx->geracao_atual < ctx->ngeracoes;
+			ctx->geracao_atual++) {
+		//debugf(1, "geracao: %d\n", i);
 		//for (j = 0; j < ctx->tamanho_populacao; j++)
 		//	mostra_individuo(popatual[j], ctx->ngenes);
 		selecao(popatual, ctx->tamanho_populacao, ctx);
@@ -459,7 +479,7 @@ struct cromossomo **pensa(struct contexto *ctx)
 
 void ajuda()
 {
-	debugf(2, "programa [opcoes] <diretorio>\n"
+	debugf(1, "programa [opcoes] <diretorio>\n"
 		"Opcoes: \n"
 		"\n"
 		"	-p POPULACAO\n"
@@ -533,7 +553,7 @@ int main(int argc, char *argv[])
 	size_t i;
 	int ret = 0;
 
-	ctx.verbosidade = 0;
+	ctx.verbosidade = 1;
 	ctx.mostra_arquivos = 0;
 	ctx.tamanho_midia = 700 * 1024;
 	ctx.tamanho_total = 0;
@@ -546,6 +566,7 @@ int main(int argc, char *argv[])
 	ctx.ngeracoes = 10000;
 	ctx.recombinacao_area = 10;
 	avalia_opcoes(argc, argv, &ctx);
+	aloca_estatisticas(&ctx);
 	verbosidade = ctx.verbosidade; /* blarg */
 	ctx.arquivos = lista_arquivos(ctx.caminho, &ctx.narquivos);
 	ctx.ngenes = ctx.narquivos;
@@ -576,6 +597,7 @@ int main(int argc, char *argv[])
 	else {
 		struct cromossomo **pop;
 		pop = pensa(&ctx);
+		mostra_medias(&ctx);
 		if (ctx.mostra_arquivos)
 			mostra(pop, &ctx);
 	}

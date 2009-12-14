@@ -15,7 +15,7 @@
 #warning use um sistema operacional que presta
 #endif
 
-static int verbosidade = 0;
+static int verbosidade = 1;
 
 void debugf(int nivel, const char *fmt, ...)
 {

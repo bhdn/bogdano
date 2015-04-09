@@ -1,0 +1,1 @@
+Contains mostly personal code I write as college tasks, and stuff I think is interesting to be published.
